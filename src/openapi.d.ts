@@ -1113,6 +1113,10 @@ declare namespace Components {
             previous_page_id: string;
         }
         /**
+         * ListTagsPayload.[]
+         */
+        export type ListTagsPayload = /* TagPayload */ TagPayload[];
+        /**
          * LiveChatAccountInfoResponse
          */
         export interface LiveChatAccountInfoResponse {
@@ -1725,6 +1729,27 @@ declare namespace Components {
              * Supervising.agent_ids
              */
             agent_ids: string;
+        }
+        /**
+         * TagPayload
+         */
+        export interface TagPayload {
+            /**
+             * TagPayload.name
+             */
+            name: string;
+            /**
+             * TagPayload.group_ids
+             */
+            group_ids: number[];
+            /**
+             * TagPayload.author_id
+             */
+            author_id: string;
+            /**
+             * TagPayload.created_at
+             */
+            created_at: string;
         }
         /**
          * TestInterface
@@ -2418,31 +2443,6 @@ declare namespace Paths {
             }
         }
     }
-    namespace DashboardCreateUser {
-        namespace Parameters {
-            export type AppSlug = string;
-        }
-        export interface PathParameters {
-            app_slug?: Parameters.AppSlug;
-        }
-        export interface RequestBody {
-            email: string;
-            password: string;
-            groups: number[];
-            name: string;
-        }
-        namespace Responses {
-            export interface $200 {
-                success?: boolean;
-            }
-            export interface $500 {
-                error: string;
-                message: {
-                    error_message: string;
-                };
-            }
-        }
-    }
     namespace DashboardListAgents {
         namespace Parameters {
             export type AppSlug = string;
@@ -2594,6 +2594,23 @@ declare namespace Paths {
             export type $200 = /* ChatsSatisfactionReport */ Components.Schemas.ChatsSatisfactionReport;
         }
     }
+    namespace DashboardReportsDeleteUser {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        export interface RequestBody {
+            id: string;
+        }
+        namespace Responses {
+            export interface $200 {
+                message?: string;
+                status?: string;
+            }
+        }
+    }
     namespace DashboardReportsFirstResponseTime {
         namespace Parameters {
             export type AppSlug = string;
@@ -2611,6 +2628,20 @@ declare namespace Paths {
         }
         namespace Responses {
             export type $200 = /* FirstResponseTimeReport */ Components.Schemas.FirstResponseTimeReport;
+        }
+    }
+    namespace DashboardReportsListTags {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        export interface RequestBody {
+            groups?: number[];
+        }
+        namespace Responses {
+            export type $200 = /* ListTagsPayload.[] */ Components.Schemas.ListTagsPayload;
         }
     }
     namespace DashboardReportsMissedChats {
@@ -2668,6 +2699,33 @@ declare namespace Paths {
         }
         namespace Responses {
             export type $200 = /* TotalChatsReport */ Components.Schemas.TotalChatsReport;
+        }
+    }
+    namespace DashboardReportsUpsertUser {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        export interface RequestBody {
+            id?: string;
+            email?: string;
+            password?: string;
+            groups?: number[];
+            name?: string;
+        }
+        namespace Responses {
+            export interface $200 {
+                success?: boolean;
+                message?: string;
+            }
+            export interface $500 {
+                error: string;
+                message: {
+                    error_message: string;
+                };
+            }
         }
     }
     namespace GetAppDetails {
@@ -3048,14 +3106,6 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardListAgents.Responses.$200>
   /**
-   * DashboardCreateUser - Create User
-   */
-  'DashboardCreateUser'(
-    parameters?: Parameters<Paths.DashboardCreateUser.PathParameters> | null,
-    data?: Paths.DashboardCreateUser.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardCreateUser.Responses.$200>
-  /**
    * DashboardListArchives - List Archives
    */
   'DashboardListArchives'(
@@ -3071,6 +3121,14 @@ export interface OperationMethods {
     data?: Paths.DashboardAppLogin.RequestBody,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardAppLogin.Responses.$200>
+  /**
+   * DashboardReportsUpsertUser - Upsert User
+   */
+  'DashboardReportsUpsertUser'(
+    parameters?: Parameters<Paths.DashboardReportsUpsertUser.PathParameters> | null,
+    data?: Paths.DashboardReportsUpsertUser.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardReportsUpsertUser.Responses.$200>
   /**
    * verifyDashboardToken - Verify Dashboard Token
    * 
@@ -3101,6 +3159,22 @@ export interface OperationMethods {
     data?: any,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardListUsers.Responses.$200>
+  /**
+   * DashboardReportsListTags - List Tags
+   */
+  'DashboardReportsListTags'(
+    parameters?: Parameters<Paths.DashboardReportsListTags.PathParameters> | null,
+    data?: Paths.DashboardReportsListTags.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardReportsListTags.Responses.$200>
+  /**
+   * DashboardReportsDeleteUser - Delete User
+   */
+  'DashboardReportsDeleteUser'(
+    parameters?: Parameters<Paths.DashboardReportsDeleteUser.PathParameters> | null,
+    data?: Paths.DashboardReportsDeleteUser.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardReportsDeleteUser.Responses.$200>
   /**
    * listGroups - List Groups
    */
@@ -3472,16 +3546,6 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardListAgents.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/create']: {
-    /**
-     * DashboardCreateUser - Create User
-     */
-    'post'(
-      parameters?: Parameters<Paths.DashboardCreateUser.PathParameters> | null,
-      data?: Paths.DashboardCreateUser.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardCreateUser.Responses.$200>
-  }
   ['/api/{app_slug}/dashboard/list_archives']: {
     /**
      * DashboardListArchives - List Archives
@@ -3501,6 +3565,16 @@ export interface PathsDictionary {
       data?: Paths.DashboardAppLogin.RequestBody,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardAppLogin.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/upsert_user']: {
+    /**
+     * DashboardReportsUpsertUser - Upsert User
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsUpsertUser.PathParameters> | null,
+      data?: Paths.DashboardReportsUpsertUser.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardReportsUpsertUser.Responses.$200>
   }
   ['/api/{app_slug}/dashboard/verify']: {
     /**
@@ -3537,6 +3611,26 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardListUsers.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/reports/list_tags']: {
+    /**
+     * DashboardReportsListTags - List Tags
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsListTags.PathParameters> | null,
+      data?: Paths.DashboardReportsListTags.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardReportsListTags.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/reports/delete_user']: {
+    /**
+     * DashboardReportsDeleteUser - Delete User
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsDeleteUser.PathParameters> | null,
+      data?: Paths.DashboardReportsDeleteUser.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardReportsDeleteUser.Responses.$200>
   }
   ['/api/{app_slug}/lc/list_groups']: {
     /**
@@ -3660,6 +3754,7 @@ export type LastPage = Components.Schemas.LastPage;
 export type LastVisit = Components.Schemas.LastVisit;
 export type Lc2 = Components.Schemas.Lc2;
 export type ListArchivesPayload = Components.Schemas.ListArchivesPayload;
+export type ListTagsPayload = Components.Schemas.ListTagsPayload;
 export type LiveChatAccountInfoResponse = Components.Schemas.LiveChatAccountInfoResponse;
 export type LiveChatListAgentsResponse = Components.Schemas.LiveChatListAgentsResponse;
 export type Meeting = Components.Schemas.Meeting;
@@ -3689,6 +3784,7 @@ export type Settings = Components.Schemas.Settings;
 export type Signature = Components.Schemas.Signature;
 export type Statistics = Components.Schemas.Statistics;
 export type Supervising = Components.Schemas.Supervising;
+export type TagPayload = Components.Schemas.TagPayload;
 export type TestInterface = Components.Schemas.TestInterface;
 export type TextVars = Components.Schemas.TextVars;
 export type Thread = Components.Schemas.Thread;

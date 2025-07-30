@@ -41,6 +41,21 @@ const getAgents = async () => {
   }
 }
 
+const getTags = async (group_id: number) => {
+  try {
+    const client = await API()
+    const { data } = await client.DashboardReportsListTags({
+      app_slug: import.meta.env.VITE_APP_SLUG
+    }, {
+      groups: [group_id]
+    })
+    return data
+  } catch (e) {
+    console.log(e)
+    return []
+  }
+}
+
 export const Route = createFileRoute('/explorer')({
   component: RouteComponent,
 })
@@ -97,14 +112,16 @@ export const ReportContext = createContext<{
     id: number,
     name: string
   }[],
-  agents: Paths.DashboardListAgents.Responses.$200
-}>({ selectedGroup: null, groups: [], agents: [] })
+  agents: Paths.DashboardListAgents.Responses.$200,
+  tags: Paths.DashboardReportsListTags.Responses.$200
+}>({ selectedGroup: null, groups: [], agents: [], tags: [] })
 
 function RouteComponent() {
   const [status, setStatus] = useState<'unauthenticated' | 'loading' | 'authenticated'>('loading')
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null)
   const [groups, setGroups] = useState<{ id: number, name: string }[]>([])
   const [agents, setAgents] = useState<Paths.DashboardListAgents.Responses.$200>([])
+  const [tags, setTags] = useState<Paths.DashboardReportsListTags.Responses.$200>([])
   const [groupsLoading, setGroupsLoading] = useState(true)
   const [showSelectionModal, setShowSelectionModal] = useState(false)
   const [selectorFilter, setSelectorFilter] = useState('')
@@ -124,9 +141,17 @@ function RouteComponent() {
         getAgents().then(r => {
           setAgents(r)
         })
+
       }
     })
   }, [])
+
+  useEffect(() => {
+    if(!selectedGroup) return
+    getTags(selectedGroup).then(r => {
+      setTags(r)
+    })
+  }, [selectedGroup])
 
 
   if (status === "loading") return <div
@@ -142,7 +167,8 @@ function RouteComponent() {
         value={{
           agents,
           selectedGroup,
-          groups
+          groups,
+          tags
         }}
       >
         <Modal

@@ -1,13 +1,13 @@
 import { createFileRoute } from '@tanstack/react-router'
-import API from '../../api/api'
-import { useContext, useEffect, useState } from 'react'
-import type { Paths } from '../../openapi'
-import { ReportContext } from './route'
-import Chart from "react-apexcharts"
-import { Button, DatePicker, Select, Spin, Table } from 'antd'
+import { DatePicker, Select, Spin, Table } from 'antd'
 import type { Dayjs } from 'dayjs'
 import dayjs from 'dayjs'
+import { useContext, useEffect, useState } from 'react'
+import Chart from "react-apexcharts"
+import API from '../../api/api'
 import HeatMap from '../../components/HeatMap'
+import type { Paths } from '../../openapi'
+import { ReportContext } from './route'
 
 export const Route = createFileRoute('/explorer/total_chats_report')({
     component: RouteComponent,
@@ -21,7 +21,7 @@ function RouteComponent() {
     const [data, setData] = useState<Paths.DashboardReportsTotalChats.Responses.$200>()
     const [heatMapData, setHeatMapData] = useState<Paths.DashboardReportsTotalChats.Responses.$200>()
     const [loading, setLoading] = useState(false)
-    const { selectedGroup, agents } = useContext(ReportContext)
+    const { selectedGroup, agents, tags } = useContext(ReportContext)
     const getTotalChats = async (props: Paths.DashboardReportsTotalChats.RequestBody) => {
         setLoading(true)
         try {
@@ -56,7 +56,8 @@ function RouteComponent() {
         getTotalChats({
             ...filters,
             groups: [selectedGroup],
-            agents: filters.agents?.length ? filters.agents : undefined
+            agents: filters.agents?.length ? filters.agents : undefined,
+            tags: filters.tags?.length ? filters.tags : undefined
         })
     }, [selectedGroup, filters])
 
@@ -106,8 +107,15 @@ function RouteComponent() {
                 <Select
                     style={{ width: 300 }}
                     mode="multiple"
-                    options={[]}
+                    options={tags
+                        .map(t => ({ label: t.name, value: t.name }))}
                     placeholder="Tags"
+                    onChange={(tags) => {
+                        setFilters({
+                            ...filters,
+                            tags
+                        })
+                    }}
                 />
             </div>
 
