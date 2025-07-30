@@ -2490,6 +2490,17 @@ declare namespace Paths {
             }[];
         }
     }
+    namespace DashboardListUsers {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        namespace Responses {
+            export type $200 = Components.Schemas.DashboardUser[];
+        }
+    }
     namespace DashboardReportsAgentPerformance {
         namespace Parameters {
             export type AppSlug = string;
@@ -3081,6 +3092,16 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardListGroups.Responses.$200>
   /**
+   * DashboardListUsers - List Users
+   * 
+   * Lists users.
+   */
+  'DashboardListUsers'(
+    parameters?: Parameters<Paths.DashboardListUsers.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardListUsers.Responses.$200>
+  /**
    * listGroups - List Groups
    */
   'listGroups'(
@@ -3504,6 +3525,18 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardListGroups.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/list_users']: {
+    /**
+     * DashboardListUsers - List Users
+     * 
+     * Lists users.
+     */
+    'get'(
+      parameters?: Parameters<Paths.DashboardListUsers.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardListUsers.Responses.$200>
   }
   ['/api/{app_slug}/lc/list_groups']: {
     /**

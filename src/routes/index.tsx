@@ -16,7 +16,8 @@ const validateSession = async () => {
     })
     return true
   } catch (e) {
-    return window.location.href = `/`
+    // window.location.href = `/`
+    return false
   }
 }
 
@@ -45,7 +46,7 @@ function RouteComponent() {
         password: userData.password
       })
       nav({
-        to: '/explorer'
+        to: '/explorer/archives'
       })
     } catch (error) {
       void messageApi.error('Something went wrong')
@@ -59,7 +60,7 @@ function RouteComponent() {
     validateSession().then(r => {
       if (r) {
         nav({
-          to: '/explorer'
+          to: '/explorer/archives'
         })
       }
     })
@@ -68,7 +69,7 @@ function RouteComponent() {
   return <div className="w-full h-[100vh] flex flex-col p-6 justify-center items-center bg-gradient-to-t from-blue-100  to-white">
     {contextHolder}
     <div className="w-full md:w-1/4 sm:w-1/2 xs:w-full flex flex-col justify-center items-center  p-4 gap-4 bg-white rounded-lg shadow">
-      <h5>LiveChat Data Explorer</h5>
+      <h5 className='text-lg font-semibold'>Chat Data Explorer</h5>
       <Input
         value={userData.email}
         onChange={(e) => setUserData({ ...userData, email: e.target.value })}
@@ -86,6 +87,11 @@ function RouteComponent() {
         href="#"
         className="text-sm text-gray-600 hover:text-gray-900"
       >Forgot Password?</a>
+       <img
+      src="/logo.png"
+      alt="logo"
+      className="w-[150px] mt-4 object-cover" />
     </div>
+   
   </div>
 }
