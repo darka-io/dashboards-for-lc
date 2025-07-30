@@ -174,6 +174,14 @@ function RouteComponent() {
                         xaxis: {
                             // categories: Object.keys(data?.records ?? {})
                             type: 'datetime'
+                        },
+                        yaxis:{
+                            forceNiceScale: true,
+                            labels:{
+                                formatter: (value) => {
+                                    return value.toFixed(0)
+                                }
+                            }
                         }
                     }}
                 />

@@ -47,6 +47,7 @@ function RouteComponent() {
   const [status, setStatus] = useState<'unauthenticated' | 'loading' | 'authenticated'>('loading')
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, contextModal] = Modal.useModal()
+  const [orgDetails, setOrgDetails] = useState<Paths.DashboardGetOrganizationDetails.Responses.$200>()
   const [groups, setGroups] = useState<Paths.ListGroups.Responses.$200>()
   const [newUser, setNewUser] = useState<{
     name?: string
@@ -70,6 +71,14 @@ function RouteComponent() {
         app_slug: import.meta.env.VITE_APP_SLUG
       })
       setUsers(users)
+      const { data: orgDetails } = await client.DashboardGetOrganizationDetails({
+        app_slug: import.meta.env.VITE_APP_SLUG
+      })
+      setOrgDetails(orgDetails)
+      whiteLabelForm.setFieldsValue({
+        domain: orgDetails?.whiteLabelDomain,
+        image: orgDetails?.whiteLabelImage
+      })
     } catch (e) {
       void messageApi.error(stringifyError(e))
     }
@@ -101,23 +110,24 @@ function RouteComponent() {
   const searchParams = useSearch({
     from: '/administration'
   }) as {
-    theme?: "dark"|"light"
+    theme?: "dark" | "light"
   }
   const LC_THEME = searchParams.theme
 
   const [form] = Form.useForm();
+  const [whiteLabelForm] = Form.useForm();
   if (status === "loading") return <div
     className='h-screen flex justify-center items-center animate-pulse'
   >Loading</div>
   return <div className={LC_THEME === "dark" ? "bg-[#141414] text-white w-full h-screen" : ""}>
     <ConfigProvider
       theme={{
-        
-        token:{
+
+        token: {
           colorPrimary: "#0066ff",
-                
+
         },
-        algorithm: LC_THEME === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm 
+        algorithm: LC_THEME === "dark" ? theme.darkAlgorithm : theme.defaultAlgorithm
       }}
     >
       {contextHolder}
@@ -190,55 +200,6 @@ function RouteComponent() {
             dataSource={users}
             renderItem={(user) => (
               <List.Item
-                // extra={<Dropdown
-                //   trigger={['click']}
-                //   menu={{
-                //     items: [
-                //       {
-                //         key: '0',
-                //         label: 'Edit',
-                //         icon: <EditOutlined />,
-                //         onClick: () => {
-                //           setModalOpen(true)
-                //           setNewUser({
-                //             id: user.id ?? "",
-                //             name: user.name ?? "",
-                //             email: user.email ?? "",
-                //             groups: user.groups ?? []
-                //           })
-                //           form.setFieldsValue({
-                //             id: user.id ?? "",
-                //             name: user.name ?? "",
-                //             email: user.email ?? "",
-                //             groups: user.groups ?? []
-                //           })
-                //         }
-                //       },
-                //       {
-                //         key: '1',
-                //         label: 'Delete',
-                //         icon: <DeleteOutlined />,
-                //         onClick: async () => {
-                //           try {
-                //             const client = await API()
-                //             await client.DashboardReportsDeleteUser({
-                //               app_slug: import.meta.env.VITE_APP_SLUG
-                //             }, {
-                //               id: user.id ?? ""
-                //             })
-                //             getGroups()
-                //           } catch (e) {
-                //             void messageApi.error(stringifyError(e))
-                //           }
-                //         }
-                //       },
-                //     ]
-                //   }}
-                // ><Button
-                //     type="text"
-                //     icon={<EllipsisOutlined style={{ transform: 'rotate(90deg)' }} />}
-                //   /></Dropdown>}
-
                 extra={
                   <div className='flex flex-row gap-2 items-center'>
                     <Button
@@ -303,14 +264,61 @@ function RouteComponent() {
         </div>
         <div className='w-[500px] flex flex-col gap-2'>
           <div className='text-lg font-semibold'>White Label Configuration</div>
-          <Alert type='info'
-            message="This feature allows to access the reporting UI via a custom domain. It currently costs $1200/year. Please contact support@darka.io for more information."
-          />
-          <Input placeholder='Domain' />
-          <Input placeholder='Logo URL' />
-          <Button
-            style={{ fontWeight: 600 }}
-            type='primary'>Save</Button>
+
+          <Form form={whiteLabelForm}
+            layout='vertical'
+          >
+            <Form.Item name={'domain'}>
+              <Input placeholder='Domain' name='domain' />
+            </Form.Item>
+            <Form.Item name={'image'}>
+              <Input placeholder='Logo URL' name='image' />
+            </Form.Item>
+            <Button
+              onClick={async () => {
+                modal.confirm({
+                  title: 'Save Changes',
+                  content: 'Are you sure you want to update the white label configuration?',
+                  onOk: async () => {
+                    try {
+                      const client = await API()
+                      await client.DashboardWhiteLabel({
+                        app_slug: import.meta.env.VITE_APP_SLUG
+                      }, {
+                        domain: whiteLabelForm.getFieldValue('domain'),
+                        image_url: whiteLabelForm.getFieldValue('image')
+                      })
+                      getGroups()
+                    } catch (e) {
+                      void messageApi.error(stringifyError(e))
+                    }
+                  }
+                })
+              }}
+              block
+              style={{ fontWeight: 600 }}
+              type='primary'>Save</Button>
+          </Form>
+          <div className='mt-2'>
+            {
+              orgDetails?.domainRequestChangeStatus === "IDLE" &&
+              <Alert type='info'
+                message="
+                Before requesting a custom domain, please make sure it has an A record pointing to the IP address of our load balancer (78.47.48.3).
+                This feature allows to access the reporting UI via a custom domain. It currently costs $1200/year. Please contact support@darka.io for more information."
+              />}
+            {
+              orgDetails?.domainRequestChangeStatus === "PENDING" &&
+              <Alert type='info'
+                message="Your request to change the domain has been submitted. You will be notified once it has been approved."
+              />}
+            {
+              orgDetails?.domainRequestChangeStatus === "COMPLETED" &&
+              <Alert type='success'
+                message="Your request to change the domain has been approved. You can now access the reporting UI via your custom domain."
+              />}
+
+          </div>
         </div>
       </div>
 

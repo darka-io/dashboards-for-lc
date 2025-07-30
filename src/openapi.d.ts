@@ -477,6 +477,11 @@ declare namespace Components {
             updatedAt?: string; // date-time
             organizationId?: string;
             appSlug?: string;
+            whiteLabelImage?: string | null;
+            whiteLabelDomain?: string | null;
+            domainRequestChangeStatus?: "IDLE" | "PENDING" | "COMPLETED";
+            hasWhiteLabel?: boolean;
+            whiteLabelValidUntil?: string | null; // date-time
         }
         export interface DashboardSession {
             id?: string;
@@ -2443,6 +2448,23 @@ declare namespace Paths {
             }
         }
     }
+    namespace DashboardGetOrganizationDetails {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        namespace Responses {
+            export type $200 = Components.Schemas.DashboardDetails;
+            export interface $500 {
+                error: string;
+                message: {
+                    error_message: string;
+                };
+            }
+        }
+    }
     namespace DashboardListAgents {
         namespace Parameters {
             export type AppSlug = string;
@@ -2725,6 +2747,23 @@ declare namespace Paths {
                 message: {
                     error_message: string;
                 };
+            }
+        }
+    }
+    namespace DashboardWhiteLabel {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        export interface RequestBody {
+            image_url: string;
+            domain: string;
+        }
+        namespace Responses {
+            export interface $200 {
+                success: boolean;
             }
         }
     }
@@ -3106,6 +3145,14 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardListAgents.Responses.$200>
   /**
+   * DashboardGetOrganizationDetails - Get Organization Details
+   */
+  'DashboardGetOrganizationDetails'(
+    parameters?: Parameters<Paths.DashboardGetOrganizationDetails.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardGetOrganizationDetails.Responses.$200>
+  /**
    * DashboardListArchives - List Archives
    */
   'DashboardListArchives'(
@@ -3139,6 +3186,14 @@ export interface OperationMethods {
     data?: any,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.VerifyDashboardToken.Responses.$200>
+  /**
+   * DashboardWhiteLabel - White Label
+   */
+  'DashboardWhiteLabel'(
+    parameters?: Parameters<Paths.DashboardWhiteLabel.PathParameters> | null,
+    data?: Paths.DashboardWhiteLabel.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardWhiteLabel.Responses.$200>
   /**
    * DashboardListGroups - List Groups
    * 
@@ -3546,6 +3601,16 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardListAgents.Responses.$200>
   }
+  ['/api/{app_slug}/dashboard/get_organization_details']: {
+    /**
+     * DashboardGetOrganizationDetails - Get Organization Details
+     */
+    'get'(
+      parameters?: Parameters<Paths.DashboardGetOrganizationDetails.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardGetOrganizationDetails.Responses.$200>
+  }
   ['/api/{app_slug}/dashboard/list_archives']: {
     /**
      * DashboardListArchives - List Archives
@@ -3587,6 +3652,16 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.VerifyDashboardToken.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/white_label']: {
+    /**
+     * DashboardWhiteLabel - White Label
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardWhiteLabel.PathParameters> | null,
+      data?: Paths.DashboardWhiteLabel.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardWhiteLabel.Responses.$200>
   }
   ['/api/{app_slug}/dashboard/list_groups']: {
     /**
