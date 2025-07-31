@@ -15,6 +15,9 @@ COPY . .
 
 # openapi
 # RUN bun run openapi
+ARG VITE_OPENAPI_URL
+ENV VITE_OPENAPI_URL=$VITE_OPENAPI_URL
+RUN bun run openapi
 
 # Build the application
 RUN bun run build
