@@ -24,17 +24,19 @@ function RouteComponent() {
             const { data } = await client.DashboardReportsTagsUsage({
                 app_slug: import.meta.env.VITE_APP_SLUG
             }, {
-                ...props, tags: {
-                    exists: true
-                }
+                ...props,
+                //  tags: {
+                //     exists: true
+                // }
             })
             setData(data)
             const { data: dataWithoutTags } = await client.DashboardReportsTagsUsage({
                 app_slug: import.meta.env.VITE_APP_SLUG
             }, {
-                ...props, tags: {
-                    exists: false
-                }
+                ...props,
+                //  tags: {
+                //     exists: false
+                // }
             })
             setDataWithoutTags(dataWithoutTags)
         } catch (e) {
