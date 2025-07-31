@@ -192,7 +192,9 @@ function RouteComponent() {
           <Button
             style={{ fontWeight: 600 }}
             type='primary'
-            onClick={() => setModalOpen(true)}
+            onClick={() => {
+              setNewUser({})
+              setModalOpen(true)}}
             icon={<PlusOutlined />}>Add New User</Button>
         </div>
         <div className='flex-1 w-[500px]'>
