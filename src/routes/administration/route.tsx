@@ -193,7 +193,12 @@ function RouteComponent() {
             style={{ fontWeight: 600 }}
             type='primary'
             onClick={() => {
-              setNewUser({})
+              setNewUser({
+                id: "",
+                name: "",
+                email: "",
+                groups: []
+              })
               setModalOpen(true)}}
             icon={<PlusOutlined />}>Add New User</Button>
         </div>
