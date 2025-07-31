@@ -83,10 +83,10 @@ function RouteComponent() {
         type="default"
         onClick={login}
       >Sign In</Button>
-      <a
+      {/* <a
         href="#"
         className="text-sm text-gray-600 hover:text-gray-900"
-      >Forgot Password?</a>
+      >Forgot Password?</a> */}
        <img
       src="/logo.png"
       alt="logo"
