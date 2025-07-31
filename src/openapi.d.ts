@@ -1757,6 +1757,98 @@ declare namespace Components {
             created_at: string;
         }
         /**
+         * TagsUsageReport
+         */
+        export interface TagsUsageReport {
+            /**
+             * TagsUsageReport.name
+             */
+            name: string;
+            /**
+             * TagsUsageReport.request
+             */
+            request: {
+                /**
+                 * TagsUsageReport.request.distribution
+                 */
+                distribution: "day" | "hour" | "day-hours" | "month" | "year";
+                /**
+                 * TagsUsageReport.request.timezone
+                 */
+                timezone: string;
+                /**
+                 * TagsUsageReport.request.filters
+                 */
+                filters: {
+                    /**
+                     * TagsUsageReport.request.filters.from
+                     */
+                    from: string;
+                    /**
+                     * TagsUsageReport.request.filters.to
+                     */
+                    to: string;
+                    /**
+                     * TagsUsageReport.request.filters.properties
+                     */
+                    properties?: {
+                        /**
+                         * TagsUsageReport.request.filters.properties.routing
+                         */
+                        routing?: {
+                            /**
+                             * TagsUsageReport.request.filters.properties.routing.offline_message
+                             */
+                            offline_message?: {
+                                /**
+                                 * TagsUsageReport.request.filters.properties.routing.offline_message.exists
+                                 */
+                                exists?: boolean;
+                            };
+                        };
+                    };
+                    /**
+                     * TagsUsageReport.request.filters.tags
+                     */
+                    tags?: {
+                        /**
+                         * TagsUsageReport.request.filters.tags.exists
+                         */
+                        exists?: boolean;
+                        /**
+                         * TagsUsageReport.request.filters.tags.values
+                         */
+                        values?: string[];
+                        /**
+                         * TagsUsageReport.request.filters.tags.require_every_value
+                         */
+                        require_every_value?: boolean;
+                    };
+                    /**
+                     * TagsUsageReport.request.filters.agents
+                     */
+                    agents?: {
+                        /**
+                         * TagsUsageReport.request.filters.agents.values
+                         */
+                        values: string[];
+                    };
+                };
+            };
+            /**
+             * TagsUsageReport.total
+             */
+            total: number;
+            /**
+             * TagsUsageReport.records
+             */
+            records: {
+                [name: string]: {
+                    [name: string]: number;
+                };
+            };
+        }
+        /**
          * TestInterface
          */
         export interface TestInterface {
@@ -2704,6 +2796,27 @@ declare namespace Paths {
             export type $200 = /* ResponseTimeReport */ Components.Schemas.ResponseTimeReport;
         }
     }
+    namespace DashboardReportsTagsUsage {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        export interface RequestBody {
+            agents?: string[];
+            groups?: number[];
+            tags?: string[] | {
+                exists?: boolean;
+            };
+            from?: string;
+            to?: string;
+            distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+        }
+        namespace Responses {
+            export type $200 = /* TagsUsageReport */ Components.Schemas.TagsUsageReport;
+        }
+    }
     namespace DashboardReportsTotalChats {
         namespace Parameters {
             export type AppSlug = string;
@@ -2873,9 +2986,7 @@ declare namespace Paths {
             app_slug?: Parameters.AppSlug;
         }
         namespace Responses {
-            export interface $200 {
-                success?: boolean;
-            }
+            export type $200 = Components.Schemas.DashboardDetails;
         }
     }
 }
@@ -3134,6 +3245,14 @@ export interface OperationMethods {
     data?: Paths.DashboardReportsChatAvailability.RequestBody,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardReportsChatAvailability.Responses.$200>
+  /**
+   * DashboardReportsTagsUsage - Tags Usage
+   */
+  'DashboardReportsTagsUsage'(
+    parameters?: Parameters<Paths.DashboardReportsTagsUsage.PathParameters> | null,
+    data?: Paths.DashboardReportsTagsUsage.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardReportsTagsUsage.Responses.$200>
   /**
    * DashboardListAgents - List Agents
    * 
@@ -3589,6 +3708,16 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardReportsChatAvailability.Responses.$200>
   }
+  ['/api/{app_slug}/dashboard/reports/tags_usage']: {
+    /**
+     * DashboardReportsTagsUsage - Tags Usage
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsTagsUsage.PathParameters> | null,
+      data?: Paths.DashboardReportsTagsUsage.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardReportsTagsUsage.Responses.$200>
+  }
   ['/api/{app_slug}/dashboard/list_agents']: {
     /**
      * DashboardListAgents - List Agents
@@ -3860,6 +3989,7 @@ export type Signature = Components.Schemas.Signature;
 export type Statistics = Components.Schemas.Statistics;
 export type Supervising = Components.Schemas.Supervising;
 export type TagPayload = Components.Schemas.TagPayload;
+export type TagsUsageReport = Components.Schemas.TagsUsageReport;
 export type TestInterface = Components.Schemas.TestInterface;
 export type TextVars = Components.Schemas.TextVars;
 export type Thread = Components.Schemas.Thread;

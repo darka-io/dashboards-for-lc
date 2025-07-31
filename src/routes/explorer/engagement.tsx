@@ -191,7 +191,7 @@ function RouteComponent() {
           }}
         />
       </div>
-      <div className='p-4 text-lg font-semibold mt-4'>
+      {/* <div className='p-4 text-lg font-semibold mt-4'>
         Chat Engagement Breakpoint
       </div>
       <Table
@@ -222,7 +222,7 @@ function RouteComponent() {
 
         }
 
-      />
+      /> */}
     </Spin>
   </div>
 }

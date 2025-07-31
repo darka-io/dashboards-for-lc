@@ -8,12 +8,13 @@ import type { Paths } from '../../openapi'
 const validateSession = async () => {
   try {
     const client = await API()
-    await client.verifyDashboardToken({
+    const { data } = await client.verifyDashboardToken({
       app_slug: import.meta.env.VITE_APP_SLUG
     })
-    return true
+    return data
   } catch (e) {
-    return window.location.href = `/`
+     window.location.href = `/`
+    return false
   }
 }
 
@@ -96,14 +97,14 @@ const menuItems = [
     name: "Chat Duration",
     path: '/explorer/duration',
   },
-  {
-    name: "Agent Performance",
-    path: '/explorer/agent_performance',
-  },
-  {
-    name: "Chat Responses Time",
-    path: '/explorer/responses_time',
-  }
+  // {
+  //   name: "Agent Performance",
+  //   path: '/explorer/agent_performance',
+  // },
+  // {
+  //   name: "Chat Responses Time",
+  //   path: '/explorer/responses_time',
+  // }
 ]
 
 export const ReportContext = createContext<{
@@ -113,11 +114,13 @@ export const ReportContext = createContext<{
     name: string
   }[],
   agents: Paths.DashboardListAgents.Responses.$200,
-  tags: Paths.DashboardReportsListTags.Responses.$200
+  tags: Paths.DashboardReportsListTags.Responses.$200,
+  sessionData?: Paths.VerifyDashboardToken.Responses.$200
 }>({ selectedGroup: null, groups: [], agents: [], tags: [] })
 
 function RouteComponent() {
   const [status, setStatus] = useState<'unauthenticated' | 'loading' | 'authenticated'>('loading')
+  const [sessionData, setSessionData] = useState<Paths.VerifyDashboardToken.Responses.$200 | null>(null)
   const [selectedGroup, setSelectedGroup] = useState<number | null>(null)
   const [groups, setGroups] = useState<{ id: number, name: string }[]>([])
   const [agents, setAgents] = useState<Paths.DashboardListAgents.Responses.$200>([])
@@ -132,7 +135,9 @@ function RouteComponent() {
   useEffect(() => {
     validateSession().then(r => {
       setStatus(r ? 'authenticated' : 'unauthenticated')
+
       if (r) {
+        setSessionData(r)
         getGroups().then(r => {
           setGroupsLoading(false)
           setGroups(r.map(g => ({ id: g.id ?? Math.random(), name: g.name ?? "" })).sort((a, b) => a.name.localeCompare(b.name)))
@@ -147,7 +152,7 @@ function RouteComponent() {
   }, [])
 
   useEffect(() => {
-    if(!selectedGroup) return
+    if (!selectedGroup) return
     getTags(selectedGroup).then(r => {
       setTags(r)
     })
@@ -168,7 +173,8 @@ function RouteComponent() {
           agents,
           selectedGroup,
           groups,
-          tags
+          tags,
+          sessionData: sessionData || undefined
         }}
       >
         <Modal
@@ -197,7 +203,7 @@ function RouteComponent() {
         <div className='w-[300px] bg-gray-50 p-2 h-screen flex flex-col'>
           {/* LOGO */}
           <div>
-            <img src={"/logo.png"} className='w-[200px] mx-auto py-4' />
+            <img src={sessionData?.whiteLabelImage || "/logo.png"} className='w-[200px] mx-auto py-4 max-h-[80px]' />
           </div>
           {/* GROUP SELECTOR */}
           <Spin spinning={groupsLoading}>
