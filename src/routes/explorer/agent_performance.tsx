@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Avatar, DatePicker, Select, Typography } from 'antd'
+import { Avatar, DatePicker, Select, Spin, Typography } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { formatDate } from './total_chats_report'
 import dayjs from 'dayjs'
@@ -42,7 +42,7 @@ function RouteComponent() {
   }
 
   useEffect(() => {
-    if (!selectedGroup) return
+    if (!selectedGroup && selectedGroup != 0) return
     getPerformanceReport({
       from: filters.from,
       to: filters.to,
@@ -89,66 +89,73 @@ function RouteComponent() {
       </div>
     </div>
     {/* TABLE */}
-    <div className='flex flex-col   gap-2 min-w-[800px] mt-6 overlow-y-auto'>
-      {/* TITLE ROW */}
-      <div className='flex itmes-stretch gap-4 justify-start w-full w-[100px]' >
-        <div className=' text-gray-400 text-[14px] w-[300px]'>
-          Agent
-        </div >
-        <div className=' text-gray-400 text-[14px] w-[100px]'>
-          Total Chats
-        </div>
-        <div className=' text-gray-400 text-[14px] w-[100px]'>
-          Satisfaction
-        </div>
-        <div className=' text-gray-400 text-[14px] w-[100px]'>
-          First Response
-        </div>
-        <div className=' text-gray-400 text-[14px] w-[100px]'>
-          Chating Time
-        </div>
-        <div className=' text-gray-400 text-[14px] w-[100px]'>
-          Efiiciency
-        </div>
-        <div className=' text-gray-400 text-[14px] w-[100px]'>
-          Chats Limit
-        </div>
-
-
-      </div>
-      {
-        agents.map(a => {
-          return <div className='flex flex-row gap-4 items-center justify-start w-full'>
-            {/* NAME */}
-            <div className=' text-gray-400 text-[14px] w-[300px] flex flex-row gap-2 items-center'>
-              <Avatar 
-              size={40}
-              src={a.avatar ?? `https://api.dicebear.com/9.x/initials/svg?seed=${a.name}`} />
-              <div className='flex flex-col  w-[150px]'>
-                <Typography.Text strong ellipsis>{a.name}</Typography.Text>
-                <div>
-                  <Typography.Text type='secondary' ellipsis>{a.id}</Typography.Text>
-                </div>
-              </div></div>
-            {/* TOTAL CHATS */}
-            <div className={TableItemStyle}>{data?.records[a.id]?.chats_count ?? 0}</div>
-            {/* SATISFACTION */}
-            <div className={TableItemStyle2}>{(Math.ceil((data?.records[a.id]?.chats_rated_good ?? 0) * 100 / (data?.records[a.id]?.chats_count ?? 1)) / 100).toFixed(2)}</div>
-            {/* FIRST RESPONSE */}
-            <div className={TableItemStyle}>{data?.records[a.id]?.first_response_time ?? 0}</div>
-            {/* CHATTING TIME */}
-            <div className={TableItemStyle2}>{dayjs.duration((data?.records[a.id]?.chatting_time ?? 0) * 1000).format("HH:mm")}</div>
-            {/* Efiiciency */}
-            <div className={TableItemStyle}>
-              {(data?.records[a.id]?.accepting_chats_time && data?.records[a.id]?.chats_count) ? Math.ceil(((data?.records[a.id]?.accepting_chats_time ?? 0) / (data?.records[a.id]?.chats_count ?? 1) * 100) / 100) :
-                (data?.records[a.id]?.chats_count ?? 0).toFixed(2)
-              }
-            </div>
-            {/* Chats Limit */}
-            <div className={TableItemStyle2}>{a.max_chats_count}</div>
+    <Spin spinning={loading}>
+      <div className='flex flex-col   gap-2 min-w-[1000px] mt-6 overlow-y-auto'>
+        {/* TITLE ROW */}
+        <div className='flex itmes-stretch gap-4 justify-start w-full w-[100px]' >
+          <div className=' text-gray-400 text-[14px] w-[300px]'>
+            Agent
+          </div >
+          <div className=' text-gray-400 text-[14px] w-[100px]'>
+            Total Chats
           </div>
-        })
-      }
-    </div>
+          <div className=' text-gray-400 text-[14px] w-[100px]'>
+            Satisfaction
+          </div>
+          <div className=' text-gray-400 text-[14px] w-[100px]'>
+            First Response
+          </div>
+          <div className=' text-gray-400 text-[14px] w-[100px]'>
+            Chating Time
+          </div>
+          <div className=' text-gray-400 text-[14px] w-[100px]'>
+            Accepting
+          </div>
+          <div className=' text-gray-400 text-[14px] w-[100px]'>
+            Efficiency
+          </div>
+          <div className=' text-gray-400 text-[14px] w-[100px]'>
+            Chats Limit
+          </div>
+
+
+        </div>
+        {
+          agents.map(a => {
+            return <div className='flex flex-row gap-4 items-center justify-start w-full'>
+              {/* NAME */}
+              <div className=' text-gray-400 text-[14px] w-[300px] flex flex-row gap-2 items-center'>
+                <Avatar
+                  size={40}
+                  src={a.avatar ?? `https://api.dicebear.com/9.x/initials/svg?seed=${a.name}`} />
+                <div className='flex flex-col  w-[150px]'>
+                  <Typography.Text strong ellipsis>{a.name}</Typography.Text>
+                  <div>
+                    <Typography.Text type='secondary' ellipsis>{a.id}</Typography.Text>
+                  </div>
+                </div></div>
+              {/* TOTAL CHATS */}
+              <div className={TableItemStyle}>{data?.records[a.id]?.chats_count ?? 0}</div>
+              {/* SATISFACTION */}
+              <div className={TableItemStyle2}>{(Math.ceil((data?.records[a.id]?.chats_rated_good ?? 0) * 100 / (data?.records[a.id]?.chats_count ?? 1)) / 100).toFixed(2)}</div>
+              {/* FIRST RESPONSE */}
+              <div className={TableItemStyle}>{dayjs.duration((data?.records[a.id]?.first_response_time ?? 0)*1000).format("HH:mm:ss")}</div>
+              {/* CHATTING TIME */}
+              <div className={TableItemStyle2}>{dayjs.duration((data?.records[a.id]?.chatting_time ?? 0) * 1000).format("HH:mm:ss")}</div>
+              {/* ACCEPTING TIME */}
+              <div className={TableItemStyle}>{dayjs.duration((data?.records[a.id]?.accepting_chats_time ?? 0) * 1000).format("HH:mm:ss")}</div>
+              {/* Efiiciency */}
+              <div className={TableItemStyle2}>
+                {(data?.records[a.id]?.accepting_chats_time && data?.records[a.id]?.chats_count) ? (Math.ceil(((data?.records[a.id]?.chats_count ?? 1) * 100)/((data?.records[a.id]?.accepting_chats_time ?? 0)/3600))/100).toFixed(2) :
+                  (data?.records[a.id]?.chats_count ?? 0).toFixed(2)
+                }
+              </div>
+              {/* Chats Limit */}
+              <div className={TableItemStyle}>{a.max_chats_count}</div>
+            </div>
+          })
+        }
+      </div>
+    </Spin>
   </div>
 }
