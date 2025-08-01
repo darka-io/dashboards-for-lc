@@ -25,18 +25,18 @@ function RouteComponent() {
                 app_slug: import.meta.env.VITE_APP_SLUG
             }, {
                 ...props,
-                //  tags: {
-                //     exists: true
-                // }
+                tags: {
+                    exists: true
+                }
             })
             setData(data)
             const { data: dataWithoutTags } = await client.DashboardReportsTagsUsage({
                 app_slug: import.meta.env.VITE_APP_SLUG
             }, {
                 ...props,
-                //  tags: {
-                //     exists: false
-                // }
+                tags: {
+                    exists: false
+                }
             })
             setDataWithoutTags(dataWithoutTags)
         } catch (e) {
@@ -74,6 +74,8 @@ function RouteComponent() {
             <div className='flex flex-col gap-2 justify-start'>
                 <div className=' text-gray-400 text-[14px]'>Date Range:</div>
                 <DatePicker.RangePicker style={{ width: 300 }}
+                    disabledDate={(d) => !d || d.isAfter(dayjs())}
+
                     onChange={(dates, dateStrings) => {
                         if (dateStrings) {
 
@@ -153,6 +155,11 @@ function RouteComponent() {
                         }
                     ]}
                     options={{
+                        chart: {
+                            zoom: {
+                                enabled: false
+                            }
+                        },
                         title: {
                             text: `Total Chats: ${data?.total ?? 0}`,
                         },

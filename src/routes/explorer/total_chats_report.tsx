@@ -71,7 +71,11 @@ function RouteComponent() {
             {/* DATE RANGE */}
             <div className='flex flex-col gap-2 justify-start'>
                 <div className=' text-gray-400 text-[14px]'>Date Range:</div>
-                <DatePicker.RangePicker style={{ width: 300 }}
+                <DatePicker.RangePicker
+                    disabledDate={(d) => !d || d.isAfter(dayjs())}
+                    allowClear
+                    
+                    style={{ width: 300 }}
                     onChange={(dates, dateStrings) => {
                         if (dateStrings) {
 
@@ -143,6 +147,11 @@ function RouteComponent() {
                         }
                     ]}
                     options={{
+                        chart: {
+                            zoom: {
+                                enabled: false
+                            }
+                        },
                         title: {
                             text: `Total Chats: ${data?.total ?? 0}`,
                         },
@@ -175,9 +184,9 @@ function RouteComponent() {
                             // categories: Object.keys(data?.records ?? {})
                             type: 'datetime'
                         },
-                        yaxis:{
+                        yaxis: {
                             forceNiceScale: true,
-                            labels:{
+                            labels: {
                                 formatter: (value) => {
                                     return value.toFixed(0)
                                 }
