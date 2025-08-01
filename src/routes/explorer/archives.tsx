@@ -82,7 +82,7 @@ function RouteComponent() {
                 }
 
             </div>
-           
+
             <div className='p-2 justify-between w-full flex'>
                 <Button
                     onClick={() => getChats({ page_id: data?.previous_page_id })}
@@ -112,6 +112,8 @@ function RouteComponent() {
                         className='text-sm font-semibold text-gray-500 mb-2'
                     >Date Range</div>
                     <DatePicker.RangePicker
+                        disabledDate={(d) => !d || d.isAfter(dayjs())}
+
                         allowClear
                         onChange={(val) => setFilters({ ...filters, from: val?.[0]?.format("YYYY-MM-DD"), to: val?.[1]?.format("YYYY-MM-DD") })}
                     />

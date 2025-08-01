@@ -9,7 +9,7 @@ import { DatePicker, Select, Spin } from 'antd'
 import Chart from "react-apexcharts"
 
 export const Route = createFileRoute('/explorer/satisfaction')({
-  component: RouteComponent,
+    component: RouteComponent,
 })
 
 function RouteComponent() {
@@ -60,6 +60,8 @@ function RouteComponent() {
             <div className='flex flex-col gap-2 justify-start'>
                 <div className=' text-gray-400 text-[14px]'>Date Range:</div>
                 <DatePicker.RangePicker style={{ width: 300 }}
+                    disabledDate={(d) => !d || d.isAfter(dayjs())}
+
                     onChange={(dates, dateStrings) => {
                         if (dateStrings) {
 
@@ -130,15 +132,20 @@ function RouteComponent() {
                             }))
                         },
                         {
-                          name: "Chats Rated Bad",
-                          // data: Object.keys(data?.records ?? {}).map(k => data?.records?.[k].total ?? 0)
-                          data: Object.keys(data?.records ?? {}).map(k => ({
-                              x: dayjs(k).toDate().getTime(),
-                              y: data?.records?.[k].bad ?? 0
-                          }))
-                      }
+                            name: "Chats Rated Bad",
+                            // data: Object.keys(data?.records ?? {}).map(k => data?.records?.[k].total ?? 0)
+                            data: Object.keys(data?.records ?? {}).map(k => ({
+                                x: dayjs(k).toDate().getTime(),
+                                y: data?.records?.[k].bad ?? 0
+                            }))
+                        }
                     ]}
                     options={{
+                        chart: {
+                            zoom: {
+                                enabled: false
+                            }
+                        },
                         title: {
                             text: `Total Chats: ${data?.total ?? 0}`,
                         },

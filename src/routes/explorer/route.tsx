@@ -1,6 +1,6 @@
 import { EllipsisOutlined, LogoutOutlined } from '@ant-design/icons'
 import { createFileRoute, Outlet, useLocation, useNavigate } from '@tanstack/react-router'
-import { Alert, Avatar, Input, Modal, Spin, Typography } from 'antd'
+import { Alert, Avatar, Input, message, Modal, Spin, Typography } from 'antd'
 import { createContext, useEffect, useState } from 'react'
 import API from '../../api/api'
 import type { Paths } from '../../openapi'
@@ -13,7 +13,7 @@ const validateSession = async () => {
     })
     return data
   } catch (e) {
-     window.location.href = `/`
+    window.location.href = `/`
     return false
   }
 }
@@ -97,14 +97,14 @@ const menuItems = [
     name: "Chat Duration",
     path: '/explorer/duration',
   },
-  // {
-  //   name: "Agent Performance",
-  //   path: '/explorer/agent_performance',
-  // },
-  // {
-  //   name: "Chat Responses Time",
-  //   path: '/explorer/responses_time',
-  // }
+  {
+    name: "Agent Performance",
+    path: '/explorer/agent_performance',
+  },
+  {
+    name: "Chat Responses Time",
+    path: '/explorer/responses_time',
+  }
 ]
 
 export const ReportContext = createContext<{
@@ -129,6 +129,8 @@ function RouteComponent() {
   const [showSelectionModal, setShowSelectionModal] = useState(false)
   const [selectorFilter, setSelectorFilter] = useState('')
   const { pathname: path } = useLocation()
+  const [messageApi, messageContext] = message.useMessage()
+  const nav = useNavigate()
 
 
   const navigate = useNavigate()
@@ -137,24 +139,26 @@ function RouteComponent() {
       setStatus(r ? 'authenticated' : 'unauthenticated')
 
       if (r) {
+
         setSessionData(r)
         getGroups().then(r => {
           setGroupsLoading(false)
           setGroups(r.map(g => ({ id: g.id ?? Math.random(), name: g.name ?? "" })).sort((a, b) => a.name.localeCompare(b.name)))
           if (!selectedGroup) setSelectedGroup(r[0].id ?? null)
         })
-        getAgents().then(r => {
-          setAgents(r)
-        })
+      
 
       }
     })
   }, [])
 
   useEffect(() => {
-    if (!selectedGroup) return
+    if (!selectedGroup && selectedGroup !== 0) return
     getTags(selectedGroup).then(r => {
       setTags(r)
+    })
+    getAgents().then(r => {
+      setAgents([...r.filter(r => r.groups.find(g => g.id == selectedGroup))])
     })
   }, [selectedGroup])
 
@@ -168,6 +172,7 @@ function RouteComponent() {
       <Alert type='info' message="Unfortunately you have not been invited to any groups. Please contact your administrator for more information" />
     </div>
     return <div className='flex flex-row h-screen '>
+      {messageContext}
       <ReportContext.Provider
         value={{
           agents,
@@ -241,6 +246,21 @@ function RouteComponent() {
           </div>
           <div
             className='p-3 rounded-lg  flex  items-center gap-2 cursor-pointer hover:bg-gray-100 transition duration-300'
+            onClick={async () => {
+                try {
+                  void messageApi.loading('Logging out...')
+                  const client = await API()
+                  await client.dashboardLogOut({
+                    app_slug: import.meta.env.VITE_APP_SLUG
+                  })
+                  void messageApi.destroy()
+                  await messageApi.success('Logged out successfully')
+                  window.location.href = `/`
+                }catch(e){
+                  console.log(e)
+                  void messageApi.error('Something went wrong')
+                }
+            }}
           >
             <LogoutOutlined />
             Log Out</div>
