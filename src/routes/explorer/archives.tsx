@@ -1,5 +1,6 @@
 import { ArrowLeftOutlined, ArrowRightOutlined } from "@ant-design/icons";
 import { createFileRoute } from "@tanstack/react-router";
+import { ThumbUpFilled, ThumbDownFilled } from "@livechat/design-system-icons";
 import {
   Avatar,
   Button,
@@ -28,7 +29,22 @@ function RouteComponent() {
     useState<Paths.DashboardListArchives.Responses.$200["chats"][0]>();
   const [filters, setFilters] =
     useState<Paths.DashboardListArchives.RequestBody>({});
-  const { selectedGroup } = useContext(ReportContext);
+  const { selectedGroup, agents, tags } = useContext(ReportContext);
+  const selectedVisitor = selectedChat?.users.find(
+    (u) => u.type === "customer"
+  );
+
+  // translations showing and hiding
+  const [shownTranslations, setShownTranslations] = useState<
+    Record<string, boolean>
+  >({});
+  const toggleTranslation = (id: string) => {
+    setShownTranslations((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
+
   const getChats = async (props: Paths.DashboardListArchives.RequestBody) => {
     setLoading(true);
     try {
@@ -48,8 +64,14 @@ function RouteComponent() {
   };
   useEffect(() => {
     if (!selectedGroup && selectedGroup !== 0) return;
-    getChats({ ...filters, group_ids: [selectedGroup] });
+    getChats({
+      ...filters,
+      group_ids: [selectedGroup],
+      agents: filters.agents?.length ? filters.agents : undefined,
+      tags: filters.tags?.length ? filters.tags : undefined,
+    });
   }, [selectedGroup, filters]);
+
   return (
     <div className="flex h-screen flex-row">
       <div className="w-[350px] h-screen border-r border-gray-200 flex flex-col">
@@ -91,7 +113,23 @@ function RouteComponent() {
                           size={36}
                         />
                         <div className="flex flex-col gap-1 flex-1">
-                          <div>{customer?.name ?? "Unknown Visitor"}</div>
+                          <div className="flex justify-between items-center">
+                            <div>{customer?.name ?? "Unknown Visitor"}</div>
+                            {chat.thread.properties.rating?.score === 1 && (
+                              <ThumbUpFilled
+                                className="text-green-400"
+                                width={20}
+                                height={20}
+                              />
+                            )}
+                            {chat.thread.properties.rating?.score === 0 && (
+                              <ThumbDownFilled
+                                className="text-red-400"
+                                width={20}
+                                height={20}
+                              />
+                            )}
+                          </div>
                           <div className="w-[200px] ">
                             <Typography.Text ellipsis italic>
                               {lastMessage?.text ?? ""}
@@ -166,26 +204,47 @@ function RouteComponent() {
               Agents
             </div>
 
-            <Select options={[]} placeholder="Agents" style={{ width: 200 }} />
+            <Select
+              options={agents.map((a) => ({ label: a.name, value: a.id }))}
+              placeholder="Agents"
+              mode="multiple"
+              style={{ width: 200 }}
+              onChange={(val) => setFilters({ ...filters, agents: val })}
+              allowClear
+            />
           </div>
           <div>
-            <div className="text-sm font-semibold text-gray-500 mb-2">
-              Groups
-            </div>
+            <div className="text-sm font-semibold text-gray-500 mb-2">Tags</div>
 
-            <Select options={[]} placeholder="Tags" style={{ width: 200 }} />
+            <Select
+              options={tags.map((t) => ({ label: t.name, value: t.name }))}
+              placeholder="Tags"
+              style={{ width: 200 }}
+              mode="multiple"
+              onChange={(val) => setFilters({ ...filters, tags: val })}
+              allowClear
+            />
           </div>
           <div>
             <div className="text-sm font-semibold text-gray-500 mb-2">
               Rating
             </div>
 
-            <Select options={[]} placeholder="Ratings" style={{ width: 200 }} />
+            <Select
+              options={[
+                { label: "Good", value: 1 },
+                { label: "Bad", value: 0 },
+              ]}
+              placeholder="Ratings"
+              style={{ width: 200 }}
+              onChange={(val) => setFilters({ ...filters, rating: val })}
+              allowClear
+            />
           </div>
         </div>
         {/* SELECTED CHAT */}
-        <div className="flex flex-1 flex-row overflow-hidden">
-          <div className="flex-1 overflow-y-scroll flex flex-col w-full items-center justify-start px-6 pb-6 pt-4">
+        <div className="flex flex-1 flex-row overflow-hidden ">
+          <div className="flex-1 overflow-y-auto flex flex-col w-full items-center justify-start px-6 pb-6 pt-4">
             {selectedChat &&
               selectedChat.thread.events
                 .filter(
@@ -202,7 +261,7 @@ function RouteComponent() {
                   // }
                   if (author === "system")
                     return (
-                      <div className="font-italic text-gray-500 mx-auto my-2 px-6">
+                      <div className="font-italic text-gray-500 mx-auto my-2 px-6 text-sm">
                         {e.text}
                       </div>
                     );
@@ -217,15 +276,59 @@ function RouteComponent() {
                       >
                         <div className="flex flex-col gap-1 bg-gray-100 rounded-lg p-2 ml-auto">
                           <div className="font-semibold">{author}</div>
-                          <div className="w-[400px] ">
-                            <Typography.Text italic>
-                              {e.text ?? e.type}
-                            </Typography.Text>
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {e.created_at
-                              ? dayjs(e.created_at).format("DD MMM, YY HH:mm")
-                              : ""}
+                          <div className="w-[400px]">
+                            {e.properties?.translation?.target_message ? (
+                              <>
+                                <div className="mb-2">
+                                  <Typography.Text>
+                                    {e.properties.translation.target_message}
+                                  </Typography.Text>
+                                </div>
+
+                                {shownTranslations[e.id] && (
+                                  <div className="flex-row items-center gap-2 mb-2">
+                                    <Typography.Text italic>
+                                      {e.text}
+                                    </Typography.Text>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="mb-2">
+                                <Typography.Text>{e.text}</Typography.Text>
+                              </div>
+                            )}
+
+                            <div className="text-xs text-gray-500 justify-between flex items-center">
+                              <div>
+                                {e.created_at
+                                  ? dayjs(e.created_at).format(
+                                      "DD MMM, YY HH:mm"
+                                    )
+                                  : ""}
+                              </div>
+                              {e.properties?.translation?.target_message && (
+                                <div>
+                                  Message Translated
+                                  <Button
+                                    size="small"
+                                    type="link"
+                                    className="px-0"
+                                    onClick={() => toggleTranslation(e.id)}
+                                  >
+                                    {shownTranslations[e.id] ? (
+                                      <div className="text-blue-400">
+                                        Hide Translation
+                                      </div>
+                                    ) : (
+                                      <div className="text-blue-400">
+                                        Show Translation
+                                      </div>
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
                         <Avatar
@@ -247,24 +350,67 @@ function RouteComponent() {
                         />
                         <div className="flex flex-col gap-1 bg-gray-100 rounded-lg p-2 ">
                           <div className="font-semibold">{author}</div>
-                          <div className="w-[400px] ">
-                            <Typography.Text italic>
-                              {e.text ?? e.type}
-                            </Typography.Text>
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {e.created_at
-                              ? dayjs(e.created_at).format("DD MMM, YY HH:mm")
-                              : ""}
+                          <div className="w-[400px]">
+                            {e.properties?.translation?.target_message ? (
+                              <>
+                                <div className="mb-2">
+                                  <Typography.Text>
+                                    {e.properties.translation.target_message}
+                                  </Typography.Text>
+                                </div>
+
+                                {shownTranslations[e.id] && (
+                                  <div className="flex-row items-center gap-2 mb-2">
+                                    <Typography.Text italic>
+                                      {e.text}
+                                    </Typography.Text>
+                                  </div>
+                                )}
+                              </>
+                            ) : (
+                              <div className="mb-2">
+                                <Typography.Text>{e.text}</Typography.Text>
+                              </div>
+                            )}
+
+                            <div className="text-xs text-gray-500 justify-between flex items-center">
+                              <div>
+                                {e.created_at
+                                  ? dayjs(e.created_at).format(
+                                      "DD MMM, YY HH:mm"
+                                    )
+                                  : ""}
+                              </div>
+                              {e.properties?.translation?.target_message && (
+                                <div>
+                                  Message Translated
+                                  <Button
+                                    size="small"
+                                    type="link"
+                                    className="px-0"
+                                    onClick={() => toggleTranslation(e.id)}
+                                  >
+                                    {shownTranslations[e.id] ? (
+                                      <div className="text-blue-400">
+                                        Hide Original
+                                      </div>
+                                    ) : (
+                                      <div className="text-blue-400">
+                                        Show Original
+                                      </div>
+                                    )}
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                        {/* </div> */}
                       </div>
                     );
                 })}
           </div>
           {/* CHAT DETAILS */}
-          <div className="flex-1 flex flex-col max-w-[500px] w-full p-4 space-y-4">
+          <div className="flex-1 flex flex-col max-w-[500px] w-full p-4 space-y-4 overflow-y-auto">
             {/* Header: Avatar + Name */}
             <div className="flex items-center gap-2">
               <Avatar
@@ -275,41 +421,130 @@ function RouteComponent() {
                 {selectedChat?.users[0]?.name ?? "Unknown Visitor"}
               </div>
             </div>
-            <Card title="Chat Info" className="w-full shadow-sm rounded-xl">
-              <div className="flex flex-row justify-between mb-2">
-                <div className="text-gray-500">Chat ID</div>
-                <div className="">{selectedChat?.id}</div>
-              </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-gray-500">Previous Chat ID</div>
-                <div className="">{selectedChat?.thread.previous_thread_id ?? "-"}</div>
-              </div>
-              <div className="flex flex-row justify-between">
-                      <div className="text-gray-500">Next Chat ID</div>
-                <div className="">{selectedChat?.thread.next_thread_id ?? "-"}</div>
-              </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-gray-500">Rating:</div>
-                <div className="">{selectedChat?.thread.properties.rating ?? "-"}</div>
-              </div>
-            </Card>
-
-            <Card title="Technology" className="w-full shadow-sm rounded-xl">
-              {/* Insert Technology content here */}
-            </Card>
-
-            <Card
-              title="Custom Variables"
-              className="w-full shadow-sm rounded-xl"
-            >
-                {selectedChat?.thread.custom_variables?.map((v) => (
-                  <div key={v.key} className="flex flex-row justify-between">
-                    <div className="">{v.key}</div>
-                    <div className="text-gray-500">{v.value}</div>
+            {/* CHAT INFO */}
+            <div className="flex items-center gap-3 flex-col">
+              <Card title="Chat Info" className="w-full shadow-sm rounded-xl">
+                <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                  <div className="w-[200px]  border-gray-200">Chat ID</div>
+                  <div className="text-gray-500 flex-1">{selectedChat?.id}</div>
+                </div>
+                <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                  <div className="w-[200px]  border-gray-200">
+                    Previous Chat ID
                   </div>
-                ))}
-              {/* Insert Custom Variables content here */}
-            </Card>
+                  <div className="text-gray-500 flex-1">
+                    {selectedChat?.thread.previous_thread_id ?? "-"}
+                  </div>
+                </div>
+                <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                  <div className="w-[200px]  border-gray-200">Next Chat ID</div>
+                  <div className="text-gray-500 flex-1">
+                    {selectedChat?.thread.next_thread_id ?? "-"}
+                  </div>
+                </div>
+                <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                  <div className="w-[200px] border-gray-200">Rating:</div>
+                  <div className="flex-1">
+                    {selectedChat?.thread?.properties?.rating?.score === 1 ? (
+                      <ThumbUpFilled
+                        className="text-green-400"
+                        width={20}
+                        height={20}
+                      />
+                    ) : selectedChat?.thread?.properties?.rating?.score ===
+                      0 ? (
+                      <ThumbDownFilled
+                        className="text-red-400"
+                        width={20}
+                        height={20}
+                      />
+                    ) : (
+                      <span className="text-gray-500">-</span>
+                    )}
+                  </div>
+                </div>
+              </Card>
+              {/* TECHNOLOGY */}
+              <Card
+                title="Visitor Data"
+                className="w-full shadow-sm rounded-xl"
+              >
+                {selectedVisitor?.last_visit ? (
+                  <>
+                    <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                      <div className="w-[200px]  border-gray-200">Country</div>
+                      <div className="text-gray-500 flex-1">
+                        {selectedVisitor.last_visit?.geolocation?.country ??
+                          "-"}
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                      <div className="w-[200px]  border-gray-200">Region</div>
+                      <div className="text-gray-500 flex-1">
+                        {selectedVisitor.last_visit?.geolocation?.region ?? "-"}
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                      <div className="w-[200px]  border-gray-200">City</div>
+                      <div className="text-gray-500 flex-1">
+                        {selectedVisitor.last_visit?.geolocation?.city ?? "-"}
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                      <div className="w-[200px]  border-gray-200">Timezone</div>
+                      <div className="text-gray-500 flex-1">
+                        {selectedVisitor.last_visit?.geolocation?.timezone ??
+                          "-"}
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                      <div className="w-[200px]  border-gray-200">Region</div>
+                      <div className="text-gray-500 flex-1">
+                        {selectedVisitor.last_visit?.geolocation?.region ?? "-"}
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                      <div className="w-[200px]  border-gray-200">
+                        User Agent
+                      </div>
+                      <div className="text-gray-500 flex-1">
+                        {selectedVisitor.last_visit?.user_agent ?? "-"}
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                      <div className="w-[200px]  border-gray-200">
+                        Last Page
+                      </div>
+                      <div className="text-gray-500 flex-1">
+                        {selectedVisitor.last_visit?.last_pages[0]?.url ?? "-"}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-gray-500 flex-1">Empty</div>
+                )}
+              </Card>
+
+              {/* CUSTOM VARIABLES */}
+              <Card
+                title="Custom Variables"
+                className="w-full shadow-sm rounded-xl"
+              >
+                {selectedChat?.thread.custom_variables?.length ? (
+                  selectedChat.thread.custom_variables.map((v) => (
+                    <div
+                      key={v.key}
+                      className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center"
+                    >
+                      <div className="w-[200px] border-gray-200">{v.key}</div>
+                      <div className="text-gray-500 flex-1">{v.value}</div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-gray-500 flex-1">Empty</div>
+                )}
+              </Card>
+            </div>
           </div>
         </div>
       </div>

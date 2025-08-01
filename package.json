@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@livechat/design-system": "^0.13.5",
+    "@livechat/design-system-icons": "^2.31.0",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-router": "^1.130.2",
     "@tanstack/react-router-devtools": "^1.130.2",
