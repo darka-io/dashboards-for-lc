@@ -248,7 +248,10 @@ function RouteComponent() {
             {selectedChat &&
               selectedChat.thread.events
                 .filter(
-                  (e) => e.type === "message" || e.type === "system_message"
+                  (e) =>
+                    e.type === "message" ||
+                    e.type === "system_message" ||
+                    e.type === "filled_form"
                 )
                 .map((e) => {
                   let author = selectedChat.users.find(
@@ -263,6 +266,101 @@ function RouteComponent() {
                     return (
                       <div className="font-italic text-gray-500 mx-auto my-2 px-6 text-sm">
                         {e.text}
+                      </div>
+                    );
+                  // pre-cht form
+                  else if (
+                    e.type === "filled_form" &&
+                    e.properties?.lc2?.form_type === "prechat"
+                  )
+                    return (
+                      <div
+                        key={e.id}
+                        className="p-4 w-full flex flex-row gap-2"
+                      >
+                        <Card
+                          title="Pre-Chat Form"
+                          className="w-[400px]"
+                          size="small"
+                        >
+                          {e.fields?.map((field) => (
+                            <div key={field.id} className="mb-2">
+                              <div className="text-xs text-gray-500">
+                                {field.label}
+                              </div>
+                              {field.answer && (
+                                <div className="font-medium">
+                                  {field.answer}
+                                </div>
+                              )}
+                              {field.answers &&
+                                Array.isArray(field.answers) &&
+                                field.answers.length > 0 && (
+                                  <div className="font-medium">
+                                    {field.answers.join(", ")}
+                                  </div>
+                                )}
+                            </div>
+                          ))}
+                          <div className="text-xs text-gray-400 mt-2">
+                            {e.created_at
+                              ? dayjs(e.created_at).format("DD MMM, YY HH:mm")
+                              : ""}
+                          </div>
+                        </Card>
+                      </div>
+                    );
+                  else if (
+                    e.type === "filled_form" &&
+                    e.properties?.lc2?.form_type === "postchat"
+                  )
+                    return (
+                      <div
+                        key={e.id}
+                        className="p-4 w-full flex flex-row gap-2"
+                      >
+                        <Card
+                          key={e.id}
+                          title="Post-chat Form"
+                          className="w-[400px] mr-auto"
+                          size="small"
+                        >
+                          {e.fields?.map((field) => (
+                            <div key={field.id} className="mb-2">
+                              <div className="text-xs text-gray-500">
+                                {field.label}
+                              </div>
+                              {field.answer && (
+                                <div className="font-medium">
+                                  {typeof field.answer === "string" ||
+                                  typeof field.answer === "number"
+                                    ? field.answer
+                                    : typeof field.answer === "object" &&
+                                        "label" in field.answer
+                                      ? (field.answer as { label: string })
+                                          .label
+                                      : "[Unknown answer]"}
+                                </div>
+                              )}
+                              {Array.isArray(field.answers) &&
+                                field.answers.length > 0 && (
+                                  <div className="font-medium">
+                                    {typeof field.answers[0] === "object"
+                                      ? field.answers
+                                          .map((a) => a.label)
+                                          .join(", ")
+                                      : field.answers.join(", ")}
+                                  </div>
+                                )}
+                            </div>
+                          ))}
+
+                          <div className="text-xs text-gray-400 mt-2">
+                            {e.created_at
+                              ? dayjs(e.created_at).format("DD MMM, YY HH:mm")
+                              : ""}
+                          </div>
+                        </Card>
                       </div>
                     );
                   else if (
