@@ -274,8 +274,21 @@ function RouteComponent() {
                         key={e.id}
                         className="p-4 w-full flex flex-row gap-2"
                       >
-                        <div className="flex flex-col gap-1 bg-gray-100 rounded-lg p-2 ml-auto">
-                          <div className="font-semibold">{author}</div>
+                        <div
+                          className={`flex flex-col gap-1 rounded-lg p-2 ml-auto ${
+                            e.visibility.includes("agent")
+                              ? "bg-orange-100"
+                              : "bg-gray-100"
+                          }`}
+                        >
+                          <div className="flex flex-row items-center justify-between">
+                            <div className="font-semibold">{author}</div>
+                            {e.visibility.includes("agent") && (
+                              <div className="text-xs text-gray-500 ml-2 whitespace-nowrap">
+                                Note
+                              </div>
+                            )}
+                          </div>
                           <div className="w-[400px]">
                             {e.properties?.translation?.target_message ? (
                               <>
