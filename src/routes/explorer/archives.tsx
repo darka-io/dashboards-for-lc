@@ -443,7 +443,7 @@ function RouteComponent() {
                   </div>
                 </div>
                 <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
-                  <div className="w-[200px] border-gray-200">Rating:</div>
+                  <div className="w-[200px] border-gray-200">Rating</div>
                   <div className="flex-1">
                     {selectedChat?.thread?.properties?.rating?.score === 1 ? (
                       <ThumbUpFilled
@@ -461,6 +461,19 @@ function RouteComponent() {
                     ) : (
                       <span className="text-gray-500">-</span>
                     )}
+                  </div>
+                </div>
+                <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                  <div className="w-[200px]  border-gray-200">Agents</div>
+                  <div className="text-gray-500 flex-1">
+                    {selectedChat?.thread?.user_ids
+                      ? selectedChat.thread.user_ids
+                          .filter((id) => !id.includes("-"))
+                          .map((id) => agents.find((a) => a.id === id))
+                          .filter(Boolean)
+                          .map((agent) => agent?.name)
+                          .join(", ")
+                      : "-"}
                   </div>
                 </div>
               </Card>
