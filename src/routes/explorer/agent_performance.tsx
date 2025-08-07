@@ -23,7 +23,7 @@ function RouteComponent() {
     groups: []
   })
 
-  const { agents, tags, selectedGroup } = useContext(ReportContext)
+  const { agents, tags, selectedGroup, groups } = useContext(ReportContext)
 
   const [data, setData] = useState<Paths.DashboardReportsAgentPerformance.Responses.$200>()
   const [loading, setLoading] = useState(false)
@@ -58,6 +58,21 @@ function RouteComponent() {
     <div className='text-xl font-semibold'>Agent Performance</div>
     {/* FILTERS */}
     <div className='flex flex-row gap-4 items-center py-4  '>
+      {/* GROUPS */}
+      <div>
+        <div className="text-sm font-semibold text-gray-500 mb-2">
+          Groups
+        </div>
+
+        <Select
+          options={groups.map((a) => ({ label: a.name, value: a.id }))}
+          placeholder="Groups"
+          mode="multiple"
+          style={{ width: 200 }}
+          onChange={(val) => setFilters({ ...filters, groups: val.length ? val : undefined })}
+          allowClear
+        />
+      </div>
       {/* DATE RANGE */}
       <div className='flex flex-col gap-2 justify-start'>
         <div className=' text-gray-400 text-[14px]'>Date Range:</div>
@@ -139,14 +154,14 @@ function RouteComponent() {
               {/* SATISFACTION */}
               <div className={TableItemStyle2}>{(Math.ceil((data?.records[a.id]?.chats_rated_good ?? 0) * 100 / (data?.records[a.id]?.chats_count ?? 1)) / 100).toFixed(2)}</div>
               {/* FIRST RESPONSE */}
-              <div className={TableItemStyle}>{dayjs.duration((data?.records[a.id]?.first_response_time ?? 0)*1000).format("HH:mm:ss")}</div>
+              <div className={TableItemStyle}>{dayjs.duration((data?.records[a.id]?.first_response_time ?? 0) * 1000).format("HH:mm:ss")}</div>
               {/* CHATTING TIME */}
               <div className={TableItemStyle2}>{dayjs.duration((data?.records[a.id]?.chatting_time ?? 0) * 1000).format("HH:mm:ss")}</div>
               {/* ACCEPTING TIME */}
               <div className={TableItemStyle}>{dayjs.duration((data?.records[a.id]?.accepting_chats_time ?? 0) * 1000).format("HH:mm:ss")}</div>
               {/* Efiiciency */}
               <div className={TableItemStyle2}>
-                {(data?.records[a.id]?.accepting_chats_time && data?.records[a.id]?.chats_count) ? (Math.ceil(((data?.records[a.id]?.chats_count ?? 1) * 100)/((data?.records[a.id]?.accepting_chats_time ?? 0)/3600))/100).toFixed(2) :
+                {(data?.records[a.id]?.accepting_chats_time && data?.records[a.id]?.chats_count) ? (Math.ceil(((data?.records[a.id]?.chats_count ?? 1) * 100) / ((data?.records[a.id]?.accepting_chats_time ?? 0) / 3600)) / 100).toFixed(2) :
                   (data?.records[a.id]?.chats_count ?? 0).toFixed(2)
                 }
               </div>

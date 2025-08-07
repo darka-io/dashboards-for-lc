@@ -29,7 +29,7 @@ function RouteComponent() {
     useState<Paths.DashboardListArchives.Responses.$200["chats"][0]>();
   const [filters, setFilters] =
     useState<Paths.DashboardListArchives.RequestBody>({});
-  const { selectedGroup, agents, tags } = useContext(ReportContext);
+  const { selectedGroup, agents, tags, groups } = useContext(ReportContext);
   const selectedVisitor = selectedChat?.users.find(
     (u) => u.type === "customer"
   );
@@ -171,6 +171,21 @@ function RouteComponent() {
       <div className="flex-1 flex flex-col">
         {/* FILTERS */}
         <div className="p-4 border-b border-gray-200 flex gap-4 flex flex-wrap items-center">
+          {/* GROUPS */}
+          <div>
+            <div className="text-sm font-semibold text-gray-500 mb-2">
+              Groups
+            </div>
+
+            <Select
+              options={groups.map((a) => ({ label: a.name, value: a.id }))}
+              placeholder="Groups"
+              mode="multiple"
+              style={{ width: 200 }}
+              onChange={(val) => setFilters({ ...filters, group_ids: val.length ? val : undefined })}
+              allowClear
+            />
+          </div>
           {/* QUERY */}
           <div>
             <div className="text-sm font-semibold text-gray-500 mb-2">

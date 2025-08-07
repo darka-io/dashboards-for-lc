@@ -211,7 +211,7 @@ function RouteComponent() {
             <img src={sessionData?.whiteLabelImage || "/logo.png"} className='w-[200px] mx-auto py-4 max-h-[80px]' />
           </div>
           {/* GROUP SELECTOR */}
-          <Spin spinning={groupsLoading}>
+          {/* <Spin spinning={groupsLoading}>
             <div className='p-2 text-sm font-semibold text-gray-500'>Select Group:</div>
             <div
               onClick={() => setShowSelectionModal(true)}
@@ -225,7 +225,7 @@ function RouteComponent() {
                 onClick={() => setShowSelectionModal(true)}
               ><EllipsisOutlined className='cursor-pointer transform rotate-90' /></div>
             </div>
-          </Spin>
+          </Spin> */}
           <div className='flex flex-col flex-1  mt-4 mx-2'>
             {
               menuItems.map((item, i) => {

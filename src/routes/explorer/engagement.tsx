@@ -17,7 +17,7 @@ export const Route = createFileRoute('/explorer/engagement')({
 function RouteComponent() {
   const [data, setData] = useState<Paths.DashboardReportsChatEngagement.Responses.$200>()
   const [loading, setLoading] = useState(false)
-  const { selectedGroup, agents, tags } = useContext(ReportContext)
+  const { selectedGroup, agents, tags, groups } = useContext(ReportContext)
   const getTotalChats = async (props: Paths.DashboardReportsTotalChats.RequestBody) => {
     setLoading(true)
     try {
@@ -57,6 +57,21 @@ function RouteComponent() {
     </div>
     {/* FILTERS */}
     <div className='flex flex-row gap-4 items-center px-4 '>
+      {/* GROUPS */}
+      <div>
+        <div className="text-sm font-semibold text-gray-500 mb-2">
+          Groups
+        </div>
+
+        <Select
+          options={groups.map((a) => ({ label: a.name, value: a.id }))}
+          placeholder="Groups"
+          mode="multiple"
+          style={{ width: 200 }}
+          onChange={(val) => setFilters({ ...filters, groups: val.length ? val : undefined })}
+          allowClear
+        />
+      </div>
       {/* DATE RANGE */}
       <div className='flex flex-col gap-2 justify-start'>
         <div className=' text-gray-400 text-[14px]'>Date Range:</div>
