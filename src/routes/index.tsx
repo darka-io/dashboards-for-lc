@@ -2,6 +2,8 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button, Input, message } from 'antd'
 import React, { useEffect, useState } from 'react'
 import API from '../api/api'
+import type { AxiosError } from 'openapi-client-axios'
+import type { Paths } from '../openapi'
 export const Route = createFileRoute('/' as never)({
   component: RouteComponent,
 })
@@ -49,7 +51,8 @@ function RouteComponent() {
         to: '/explorer/archives'
       })
     } catch (error) {
-      void messageApi.error('Something went wrong')
+      const e = (error as AxiosError<Paths.DashboardAppLogin.Responses.$500>).response?.data?.message?.error_message || "Something went wrong"
+      void messageApi.error(e)
       console.log(error)
 
     }
