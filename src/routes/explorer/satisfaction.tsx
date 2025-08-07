@@ -43,7 +43,7 @@ function RouteComponent() {
 
         getTotalChats({
             ...filters,
-            groups: [selectedGroup],
+            groups: filters.groups?.length ? filters.groups : [selectedGroup],
             agents: filters.agents?.length ? filters.agents : undefined,
             tags: filters.tags?.length ? filters.tags : undefined
         })
@@ -66,6 +66,7 @@ function RouteComponent() {
                     options={groups.map((a) => ({ label: a.name, value: a.id }))}
                     placeholder="Groups"
                     mode="multiple"
+                    value={filters.groups?.length ? filters.groups : (selectedGroup ? [selectedGroup]: [])}
                     style={{ width: 200 }}
                     onChange={(val) => setFilters({ ...filters, groups: val.length ? val : undefined })}
                     allowClear

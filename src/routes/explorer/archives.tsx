@@ -66,7 +66,7 @@ function RouteComponent() {
     if (!selectedGroup && selectedGroup !== 0) return;
     getChats({
       ...filters,
-      group_ids: [selectedGroup],
+      group_ids: filters.group_ids?.length ? filters.group_ids : [selectedGroup],
       agents: filters.agents?.length ? filters.agents : undefined,
       tags: filters.tags?.length ? filters.tags : undefined,
     });
@@ -179,6 +179,7 @@ function RouteComponent() {
 
             <Select
               options={groups.map((a) => ({ label: a.name, value: a.id }))}
+              value={filters.group_ids?.length ? filters.group_ids : (selectedGroup ? [selectedGroup]: [])}
               placeholder="Groups"
               mode="multiple"
               style={{ width: 200 }}

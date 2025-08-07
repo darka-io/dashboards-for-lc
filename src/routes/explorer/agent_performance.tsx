@@ -46,7 +46,7 @@ function RouteComponent() {
     getPerformanceReport({
       from: filters.from,
       to: filters.to,
-      groups: [selectedGroup]
+      groups: filters.groups?.length ? filters.groups : [selectedGroup],
     })
   }, [filters, selectedGroup])
 
@@ -69,6 +69,7 @@ function RouteComponent() {
           placeholder="Groups"
           mode="multiple"
           style={{ width: 200 }}
+          value={filters.groups?.length ? filters.groups : (selectedGroup ? [selectedGroup]: [])}
           onChange={(val) => setFilters({ ...filters, groups: val.length ? val : undefined })}
           allowClear
         />
