@@ -1,6 +1,6 @@
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons'
 import { createFileRoute, useSearch } from '@tanstack/react-router'
-import { Alert, Avatar, Button, ConfigProvider, Form, Input, List, message, Modal, Select, theme } from 'antd'
+import { Alert, Avatar, Button, ConfigProvider, Form, Input, List, message, Modal, Select, theme, Typography } from 'antd'
 import { useEffect, useState } from 'react'
 import API from '../../api/api'
 import stringifyError from '../../methods/stringifyError'
@@ -113,6 +113,7 @@ function RouteComponent() {
     theme?: "dark" | "light"
   }
   const LC_THEME = searchParams.theme
+  const [query, setQuery] = useState<string>('')
 
   const [form] = Form.useForm();
   const [whiteLabelForm] = Form.useForm();
@@ -186,9 +187,17 @@ function RouteComponent() {
 
       <div className='p-2 pl-6 pb-6 flex flex-col gap-2 h-screen'>
         {/* <div className='text-2xl font-semibold border-b border-gray-200 pb-2'>Dashboards for LiveChat</div> */}
-        <div className='text-lg font-semibold mx-2'>User Management</div>
+        <div className='text-lg font-semibold'>User Management</div>
+        <div className='max-w-[500px] mb-4'>
+          <Typography.Text>Configured users can access the reports panel via <Typography.Link target='_blank' href='https://dashboards.darka.io'>https://dashboards.darka.io</Typography.Link>,
+            or a custom domain if whitelabel plan has been purchased. </Typography.Text>
+        </div>
         <div className='w-[500px] flex flex-row gap-2 items-center'>
-          <div className='flex-1'><Input.Search placeholder='Search' /></div>
+
+          <div className='flex-1'><Input.Search
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder='Search' /></div>
           <Button
             style={{ fontWeight: 600 }}
             type='primary'
@@ -199,12 +208,13 @@ function RouteComponent() {
                 email: "",
                 groups: []
               })
-              setModalOpen(true)}}
+              setModalOpen(true)
+            }}
             icon={<PlusOutlined />}>Add New User</Button>
         </div>
         <div className='flex-1 w-[500px]'>
           <List
-            dataSource={users}
+            dataSource={users?.filter(u => u.name?.toLowerCase()?.includes(query.toLowerCase()) || u.email?.toLowerCase()?.includes(query.toLowerCase()))}
             renderItem={(user) => (
               <List.Item
                 extra={
