@@ -2776,7 +2776,6 @@ declare namespace Paths {
         export interface RequestBody {
             agents?: string[];
             groups?: number[];
-            tags?: string[];
             from?: string;
             to?: string;
             distribution?: "hour" | "day";

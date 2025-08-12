@@ -16,7 +16,8 @@ function RouteComponent() {
   const [data, setData] =
     useState<Paths.DashboardReportsChatAvailability.Responses.$200>();
   const [loading, setLoading] = useState(false);
-  const { selectedGroup, agents, tags, groups } = useContext(ReportContext);
+  const { selectedGroup, agents, groups, userFilters } =
+    useContext(ReportContext);
   const getTotalChats = async (
     props: Paths.DashboardReportsChatAvailability.RequestBody
   ) => {
@@ -51,7 +52,6 @@ function RouteComponent() {
       ...filters,
       groups: filters.groups?.length ? filters.groups : [selectedGroup],
       agents: filters.agents?.length ? filters.agents : undefined,
-      tags: filters.tags?.length ? filters.tags : undefined,
     });
   }, [selectedGroup, filters]);
 
@@ -106,6 +106,11 @@ function RouteComponent() {
                 });
               }
             }}
+            value={
+              filters.from && filters.to
+                ? [dayjs(filters.from), dayjs(filters.to)]
+                : undefined
+            }
           />
         </div>
         {/* AGENTS */}
@@ -123,23 +128,49 @@ function RouteComponent() {
               });
             }}
             maxTagCount={3}
+            value={filters.agents?.length ? filters.agents : []}
+            allowClear
           />
         </div>
+
         <div className="flex flex-col gap-2 justify-start">
-          <div className=" text-gray-400 text-[14px]">Tags:</div>
-          {/* TAGS */}
+          <div className=" text-gray-400 text-[14px]">Saved Filters:</div>
+          {/* SAVED FILTERS */}
           <Select
-            style={{ width: 300 }}
-            mode="multiple"
-            options={tags.map((t) => ({ label: t.name, value: t.name }))}
-            placeholder="Tags"
-            onChange={(tags) => {
-              setFilters({
-                ...filters,
-                tags,
-              });
+            options={
+              userFilters?.length
+                ? userFilters.map((f) => ({ label: f.name, value: f.id }))
+                : []
+            }
+            placeholder="Saved Filters"
+            style={{ width: 200 }}
+            onChange={(val) => {
+              const selectedFilters = userFilters?.find((f) => f.id === val);
+              if (selectedFilters) {
+                setFilters({
+                  ...filters,
+                  agents: selectedFilters.agents,
+                  groups: selectedFilters.groups,
+                  from:
+                    selectedFilters.lastDates === "LAST_7_DAYS"
+                      ? dayjs().subtract(7, "day").format("YYYY-MM-DD")
+                      : selectedFilters.lastDates === "LAST_30_DAYS"
+                        ? dayjs().subtract(30, "day").format("YYYY-MM-DD")
+                        : selectedFilters.from
+                          ? selectedFilters.from
+                          : undefined,
+                  to: selectedFilters.lastDates
+                    ? dayjs().format("YYYY-MM-DD")
+                    : selectedFilters.to
+                      ? selectedFilters.to
+                      : undefined,
+                });
+              }
             }}
-            maxTagCount={3}
+            allowClear
+            onClear={() => {
+              setFilters({});
+            }}
           />
         </div>
       </div>

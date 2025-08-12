@@ -146,6 +146,7 @@ function RouteComponent() {
             }}
             maxTagCount={3}
             value={filters.agents?.length ? filters.agents : []}
+            allowClear
           />
         </div>
         <div className="flex flex-col gap-2 justify-start">
