@@ -164,6 +164,7 @@ function RouteComponent() {
             }}
             maxTagCount={3}
             value={filters.tags?.length ? filters.tags : []}
+            allowClear
           />
         </div>
 
