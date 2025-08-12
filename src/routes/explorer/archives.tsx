@@ -9,6 +9,7 @@ import {
   Input,
   Select,
   Spin,
+  Tag,
   Typography,
 } from "antd";
 import dayjs from "dayjs";
@@ -29,10 +30,14 @@ function RouteComponent() {
     useState<Paths.DashboardListArchives.Responses.$200["chats"][0]>();
   const [filters, setFilters] =
     useState<Paths.DashboardListArchives.RequestBody>({});
-  const { selectedGroup, agents, tags, groups } = useContext(ReportContext);
+  const { selectedGroup, agents, tags, groups, userFilters } =
+    useContext(ReportContext);
   const selectedVisitor = selectedChat?.users.find(
     (u) => u.type === "customer"
   );
+  const [selectedSet, setSelectedSet] = useState<
+    Paths.DashboardListUserFilters.Responses.$200[number]
+  >({});
 
   // translations showing and hiding
   const [shownTranslations, setShownTranslations] = useState<
@@ -66,7 +71,9 @@ function RouteComponent() {
     if (!selectedGroup && selectedGroup !== 0) return;
     getChats({
       ...filters,
-      group_ids: filters.group_ids?.length ? filters.group_ids : [selectedGroup],
+      group_ids: filters.group_ids?.length
+        ? filters.group_ids
+        : [selectedGroup],
       agents: filters.agents?.length ? filters.agents : undefined,
       tags: filters.tags?.length ? filters.tags : undefined,
     });
@@ -179,11 +186,22 @@ function RouteComponent() {
 
             <Select
               options={groups.map((a) => ({ label: a.name, value: a.id }))}
-              value={filters.group_ids?.length ? filters.group_ids : (selectedGroup ? [selectedGroup]: [])}
+              value={
+                filters.group_ids?.length
+                  ? filters.group_ids
+                  : selectedGroup
+                    ? [selectedGroup]
+                    : []
+              }
               placeholder="Groups"
               mode="multiple"
               style={{ width: 200 }}
-              onChange={(val) => setFilters({ ...filters, group_ids: val.length ? val : undefined })}
+              onChange={(val) =>
+                setFilters({
+                  ...filters,
+                  group_ids: val.length ? val : undefined,
+                })
+              }
               allowClear
               maxTagCount={3}
             />
@@ -214,6 +232,11 @@ function RouteComponent() {
                   to: val?.[1]?.format("YYYY-MM-DD"),
                 })
               }
+              value={
+                filters.from && filters.to
+                  ? [dayjs(filters.from), dayjs(filters.to)]
+                  : undefined
+              }
             />
           </div>
           <div>
@@ -229,6 +252,7 @@ function RouteComponent() {
               onChange={(val) => setFilters({ ...filters, agents: val })}
               allowClear
               maxTagCount={3}
+              value={filters.agents?.length ? filters.agents : []}
             />
           </div>
           <div>
@@ -242,6 +266,7 @@ function RouteComponent() {
               onChange={(val) => setFilters({ ...filters, tags: val })}
               allowClear
               maxTagCount={3}
+              value={filters.tags?.length ? filters.tags : []}
             />
           </div>
           <div>
@@ -259,6 +284,57 @@ function RouteComponent() {
               onChange={(val) => setFilters({ ...filters, rating: val })}
               allowClear
             />
+          </div>
+
+          <div>
+            <div className="text-sm font-semibold text-gray-500 mb-2">
+              Filter Sets
+            </div>
+            <div>
+              <Select
+                options={
+                  userFilters?.length
+                    ? userFilters.map((f) => ({ label: f.name, value: f.id }))
+                    : []
+                }
+                placeholder="Filter Sets"
+                style={{ width: 200 }}
+                onChange={(val) => {
+                  const selectedFilters = userFilters?.find(
+                    (f) => f.id === val
+                  );
+                  if (selectedFilters) {
+                    setSelectedSet(selectedFilters);
+                    setFilters({
+                      ...filters,
+                      agents: selectedFilters.agents,
+                      tags: selectedFilters.tags,
+                      group_ids: selectedFilters.groups,
+                      from:
+                        selectedFilters.lastDates === "LAST_7_DAYS"
+                          ? dayjs().subtract(7, "day").format("YYYY-MM-DD")
+                          : selectedFilters.lastDates === "LAST_30_DAYS"
+                            ? dayjs().subtract(30, "day").format("YYYY-MM-DD")
+                            : selectedFilters.from
+                              ? selectedFilters.from
+                              : undefined,
+                      to: selectedFilters.lastDates
+                        ? dayjs().format("YYYY-MM-DD")
+                        : selectedFilters.to
+                          ? selectedFilters.to
+                          : undefined,
+                    });
+                  } else {
+                    setSelectedSet({});
+                  }
+                }}
+                allowClear
+                onClear={() => {
+                  setSelectedSet({});
+                  setFilters({});
+                }}
+              />
+            </div>
           </div>
         </div>
         {/* SELECTED CHAT */}
@@ -603,6 +679,22 @@ function RouteComponent() {
                           .filter(Boolean)
                           .map((agent) => agent?.name)
                           .join(", ")
+                      : "-"}
+                  </div>
+                </div>
+                <div className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center">
+                  <div className="w-[200px]  border-gray-200">Tags</div>
+                  <div className="text-gray-500 flex-1">
+                    {selectedChat?.thread?.tags?.length
+                      ? selectedChat.thread.tags.map((tag) => (
+                          <Tag
+                            key={tag}
+                            color="blue"
+                            style={{ marginRight: 4 }}
+                          >
+                            {tag}
+                          </Tag>
+                        ))
                       : "-"}
                   </div>
                 </div>
