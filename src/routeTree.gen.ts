@@ -18,6 +18,7 @@ import { Route as ExplorerTags_usageRouteImport } from './routes/explorer/tags_u
 import { Route as ExplorerSatisfactionRouteImport } from './routes/explorer/satisfaction'
 import { Route as ExplorerResponses_timeRouteImport } from './routes/explorer/responses_time'
 import { Route as ExplorerMissed_chatsRouteImport } from './routes/explorer/missed_chats'
+import { Route as ExplorerFilters_managerRouteImport } from './routes/explorer/filters_manager'
 import { Route as ExplorerEngagementRouteImport } from './routes/explorer/engagement'
 import { Route as ExplorerDurationRouteImport } from './routes/explorer/duration'
 import { Route as ExplorerAvailabilityRouteImport } from './routes/explorer/availability'
@@ -70,6 +71,11 @@ const ExplorerMissed_chatsRoute = ExplorerMissed_chatsRouteImport.update({
   path: '/missed_chats',
   getParentRoute: () => ExplorerRouteRoute,
 } as any)
+const ExplorerFilters_managerRoute = ExplorerFilters_managerRouteImport.update({
+  id: '/filters_manager',
+  path: '/filters_manager',
+  getParentRoute: () => ExplorerRouteRoute,
+} as any)
 const ExplorerEngagementRoute = ExplorerEngagementRouteImport.update({
   id: '/engagement',
   path: '/engagement',
@@ -107,6 +113,7 @@ export interface FileRoutesByFullPath {
   '/explorer/availability': typeof ExplorerAvailabilityRoute
   '/explorer/duration': typeof ExplorerDurationRoute
   '/explorer/engagement': typeof ExplorerEngagementRoute
+  '/explorer/filters_manager': typeof ExplorerFilters_managerRoute
   '/explorer/missed_chats': typeof ExplorerMissed_chatsRoute
   '/explorer/responses_time': typeof ExplorerResponses_timeRoute
   '/explorer/satisfaction': typeof ExplorerSatisfactionRoute
@@ -123,6 +130,7 @@ export interface FileRoutesByTo {
   '/explorer/availability': typeof ExplorerAvailabilityRoute
   '/explorer/duration': typeof ExplorerDurationRoute
   '/explorer/engagement': typeof ExplorerEngagementRoute
+  '/explorer/filters_manager': typeof ExplorerFilters_managerRoute
   '/explorer/missed_chats': typeof ExplorerMissed_chatsRoute
   '/explorer/responses_time': typeof ExplorerResponses_timeRoute
   '/explorer/satisfaction': typeof ExplorerSatisfactionRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/explorer/availability': typeof ExplorerAvailabilityRoute
   '/explorer/duration': typeof ExplorerDurationRoute
   '/explorer/engagement': typeof ExplorerEngagementRoute
+  '/explorer/filters_manager': typeof ExplorerFilters_managerRoute
   '/explorer/missed_chats': typeof ExplorerMissed_chatsRoute
   '/explorer/responses_time': typeof ExplorerResponses_timeRoute
   '/explorer/satisfaction': typeof ExplorerSatisfactionRoute
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/explorer/availability'
     | '/explorer/duration'
     | '/explorer/engagement'
+    | '/explorer/filters_manager'
     | '/explorer/missed_chats'
     | '/explorer/responses_time'
     | '/explorer/satisfaction'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/explorer/availability'
     | '/explorer/duration'
     | '/explorer/engagement'
+    | '/explorer/filters_manager'
     | '/explorer/missed_chats'
     | '/explorer/responses_time'
     | '/explorer/satisfaction'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/explorer/availability'
     | '/explorer/duration'
     | '/explorer/engagement'
+    | '/explorer/filters_manager'
     | '/explorer/missed_chats'
     | '/explorer/responses_time'
     | '/explorer/satisfaction'
@@ -269,6 +281,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExplorerMissed_chatsRouteImport
       parentRoute: typeof ExplorerRouteRoute
     }
+    '/explorer/filters_manager': {
+      id: '/explorer/filters_manager'
+      path: '/filters_manager'
+      fullPath: '/explorer/filters_manager'
+      preLoaderRoute: typeof ExplorerFilters_managerRouteImport
+      parentRoute: typeof ExplorerRouteRoute
+    }
     '/explorer/engagement': {
       id: '/explorer/engagement'
       path: '/engagement'
@@ -313,6 +332,7 @@ interface ExplorerRouteRouteChildren {
   ExplorerAvailabilityRoute: typeof ExplorerAvailabilityRoute
   ExplorerDurationRoute: typeof ExplorerDurationRoute
   ExplorerEngagementRoute: typeof ExplorerEngagementRoute
+  ExplorerFilters_managerRoute: typeof ExplorerFilters_managerRoute
   ExplorerMissed_chatsRoute: typeof ExplorerMissed_chatsRoute
   ExplorerResponses_timeRoute: typeof ExplorerResponses_timeRoute
   ExplorerSatisfactionRoute: typeof ExplorerSatisfactionRoute
@@ -326,6 +346,7 @@ const ExplorerRouteRouteChildren: ExplorerRouteRouteChildren = {
   ExplorerAvailabilityRoute: ExplorerAvailabilityRoute,
   ExplorerDurationRoute: ExplorerDurationRoute,
   ExplorerEngagementRoute: ExplorerEngagementRoute,
+  ExplorerFilters_managerRoute: ExplorerFilters_managerRoute,
   ExplorerMissed_chatsRoute: ExplorerMissed_chatsRoute,
   ExplorerResponses_timeRoute: ExplorerResponses_timeRoute,
   ExplorerSatisfactionRoute: ExplorerSatisfactionRoute,

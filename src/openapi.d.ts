@@ -483,6 +483,19 @@ declare namespace Components {
             hasWhiteLabel?: boolean;
             whiteLabelValidUntil?: string | null; // date-time
         }
+        export interface DashboardFilter {
+            id?: string;
+            createdAt?: string; // date-time
+            updatedAt?: string; // date-time
+            name?: string;
+            userId?: string;
+            lastDates?: "LAST_7_DAYS" | "LAST_30_DAYS";
+            from?: string | null; // date-time
+            to?: string | null; // date-time
+            agents?: string[];
+            tags?: string[];
+            groups?: number[];
+        }
         export interface DashboardSession {
             id?: string;
             createdAt?: string; // date-time
@@ -2619,6 +2632,23 @@ declare namespace Paths {
             }
         }
     }
+    namespace DashboardDeleteUserFilter {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        export interface RequestBody {
+            id: string;
+        }
+        namespace Responses {
+            export interface $200 {
+                message?: string;
+                status?: string;
+            }
+        }
+    }
     namespace DashboardGetOrganizationDetails {
         namespace Parameters {
             export type AppSlug = string;
@@ -2681,6 +2711,17 @@ declare namespace Paths {
                 id?: number;
                 name?: string;
             }[];
+        }
+    }
+    namespace DashboardListUserFilters {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        namespace Responses {
+            export type $200 = Components.Schemas.DashboardFilter[];
         }
     }
     namespace DashboardListUsers {
@@ -2955,6 +2996,30 @@ declare namespace Paths {
             }
         }
     }
+    namespace DashboardUpsertUserFilter {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        export interface RequestBody {
+            id?: string;
+            name?: string;
+            tags?: string[];
+            agents?: string[];
+            groups?: number[];
+            lastDate?: string;
+            from?: string;
+            to?: string;
+        }
+        namespace Responses {
+            export interface $200 {
+                message?: string;
+                status?: string;
+            }
+        }
+    }
     namespace DashboardWhiteLabel {
         namespace Parameters {
             export type AppSlug = string;
@@ -3086,15 +3151,15 @@ declare namespace Paths {
 
 export interface OperationMethods {
   /**
-   * crmAdminDeleteScope - Delete Scope
+   * crmAdminUpsertRole - Upsert Role
    * 
-   * Delete a CRM Scope
+   * Upsert a CRM Role
    */
-  'crmAdminDeleteScope'(
+  'crmAdminUpsertRole'(
     parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.CrmAdminDeleteScope.RequestBody,
+    data?: Paths.CrmAdminUpsertRole.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAdminDeleteScope.Responses.$200>
+  ): OperationResponse<Paths.CrmAdminUpsertRole.Responses.$200>
   /**
    * crmAdminListScopes - List Scopes
    * 
@@ -3106,6 +3171,16 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAdminListScopes.Responses.$200>
   /**
+   * crmAdminDeleteRole - Delete Role
+   * 
+   * Delete a CRM Role
+   */
+  'crmAdminDeleteRole'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.CrmAdminDeleteRole.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmAdminDeleteRole.Responses.$200>
+  /**
    * crmAdminUpsertScope - Upsert Scope
    * 
    * Upsert a CRM Scope
@@ -3115,6 +3190,16 @@ export interface OperationMethods {
     data?: Paths.CrmAdminUpsertScope.RequestBody,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAdminUpsertScope.Responses.$200>
+  /**
+   * crmAdminDeleteScope - Delete Scope
+   * 
+   * Delete a CRM Scope
+   */
+  'crmAdminDeleteScope'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.CrmAdminDeleteScope.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmAdminDeleteScope.Responses.$200>
   /**
    * crmAdminUpsertUser - Upsert User
    * 
@@ -3136,36 +3221,6 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAdminListUsers.Responses.$200>
   /**
-   * crmAdminUpsertRole - Upsert Role
-   * 
-   * Upsert a CRM Role
-   */
-  'crmAdminUpsertRole'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.CrmAdminUpsertRole.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAdminUpsertRole.Responses.$200>
-  /**
-   * crmAdminDeleteRole - Delete Role
-   * 
-   * Delete a CRM Role
-   */
-  'crmAdminDeleteRole'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.CrmAdminDeleteRole.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAdminDeleteRole.Responses.$200>
-  /**
-   * crmAppsUpsertApp - Upsert App
-   * 
-   * Upsert a CRM App
-   */
-  'crmAppsUpsertApp'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.CrmAppsUpsertApp.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAppsUpsertApp.Responses.$200>
-  /**
    * crmAppsListApps - List Apps
    * 
    * Lists Apps.
@@ -3186,6 +3241,16 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAppsListAppKinds.Responses.$200>
   /**
+   * crmAppsUpsertApp - Upsert App
+   * 
+   * Upsert a CRM App
+   */
+  'crmAppsUpsertApp'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.CrmAppsUpsertApp.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmAppsUpsertApp.Responses.$200>
+  /**
    * crmAuthVerifyCrmToken - Verify Token
    * 
    * Checks if the user's token is valid
@@ -3195,26 +3260,6 @@ export interface OperationMethods {
     data?: Paths.CrmAuthVerifyCrmToken.RequestBody,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAuthVerifyCrmToken.Responses.$200>
-  /**
-   * crmAuthListApiKeys - List API Keys
-   * 
-   * Lists API keys.
-   */
-  'crmAuthListApiKeys'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAuthListApiKeys.Responses.$200>
-  /**
-   * crmAuthLogOut - Log Out
-   * 
-   * Logs out from CRM
-   */
-  'crmAuthLogOut'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.CrmAuthLogOut.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAuthLogOut.Responses.$200>
   /**
    * crmAuthUpdatePassword - Update Password
    * 
@@ -3226,15 +3271,25 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAuthUpdatePassword.Responses.$200>
   /**
-   * crmAuthLogin - Log In
+   * crmAuthListSessions - List Sessions
    * 
-   * logins to CRM
+   * Lists sessions.
    */
-  'crmAuthLogin'(
+  'crmAuthListSessions'(
     parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.CrmAuthLogin.RequestBody,
+    data?: any,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAuthLogin.Responses.$200>
+  ): OperationResponse<Paths.CrmAuthListSessions.Responses.$200>
+  /**
+   * crmAuthLogOut - Log Out
+   * 
+   * Logs out from CRM
+   */
+  'crmAuthLogOut'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.CrmAuthLogOut.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmAuthLogOut.Responses.$200>
   /**
    * crmAuthDeactivateApiKey - Deactivate API Key
    * 
@@ -3246,16 +3301,6 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAuthDeactivateApiKey.Responses.$200>
   /**
-   * crmAuthListSessions - List Sessions
-   * 
-   * Lists sessions.
-   */
-  'crmAuthListSessions'(
-    parameters?: Parameters<UnknownParamsObject> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAuthListSessions.Responses.$200>
-  /**
    * crmAuthCreateApiKey - Create API Key
    * 
    * Creates a new API key for the CRM user.
@@ -3266,29 +3311,141 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAuthCreateApiKey.Responses.$200>
   /**
-   * DashboardReportsResponseTime - Response Time
+   * crmAuthLogin - Log In
+   * 
+   * logins to CRM
    */
-  'DashboardReportsResponseTime'(
-    parameters?: Parameters<Paths.DashboardReportsResponseTime.PathParameters> | null,
-    data?: Paths.DashboardReportsResponseTime.RequestBody,
+  'crmAuthLogin'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.CrmAuthLogin.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardReportsResponseTime.Responses.$200>
+  ): OperationResponse<Paths.CrmAuthLogin.Responses.$200>
   /**
-   * DashboardReportsFirstResponseTime - First Response Time
+   * crmAuthListApiKeys - List API Keys
+   * 
+   * Lists API keys.
    */
-  'DashboardReportsFirstResponseTime'(
-    parameters?: Parameters<Paths.DashboardReportsFirstResponseTime.PathParameters> | null,
-    data?: Paths.DashboardReportsFirstResponseTime.RequestBody,
+  'crmAuthListApiKeys'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: any,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardReportsFirstResponseTime.Responses.$200>
+  ): OperationResponse<Paths.CrmAuthListApiKeys.Responses.$200>
   /**
-   * DashboardReportsAgentPerformance - Agent Performance
+   * TranslatorsUpdateDetails - Update Translator Details
    */
-  'DashboardReportsAgentPerformance'(
-    parameters?: Parameters<Paths.DashboardReportsAgentPerformance.PathParameters> | null,
-    data?: Paths.DashboardReportsAgentPerformance.RequestBody,
+  'TranslatorsUpdateDetails'(
+    parameters?: Parameters<Paths.TranslatorsUpdateDetails.PathParameters> | null,
+    data?: Paths.TranslatorsUpdateDetails.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardReportsAgentPerformance.Responses.$200>
+  ): OperationResponse<Paths.TranslatorsUpdateDetails.Responses.$200>
+  /**
+   * TranslatorsGetDetails - Get Translator Details
+   */
+  'TranslatorsGetDetails'(
+    parameters?: Parameters<Paths.TranslatorsGetDetails.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.TranslatorsGetDetails.Responses.$200>
+  /**
+   * DashboardListAgents - List Agents
+   * 
+   * Lists agents.
+   */
+  'DashboardListAgents'(
+    parameters?: Parameters<Paths.DashboardListAgents.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardListAgents.Responses.$200>
+  /**
+   * dashboardLogOut - Log Out
+   * 
+   * Logs out from dashboard
+   */
+  'dashboardLogOut'(
+    parameters?: Parameters<Paths.DashboardLogOut.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardLogOut.Responses.$200>
+  /**
+   * DashboardDeleteUserFilter - Delete user filters
+   * 
+   * Deletes user filters.
+   */
+  'DashboardDeleteUserFilter'(
+    parameters?: Parameters<Paths.DashboardDeleteUserFilter.PathParameters> | null,
+    data?: Paths.DashboardDeleteUserFilter.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardDeleteUserFilter.Responses.$200>
+  /**
+   * DashboardUpsertUserFilter - Upsert user filters
+   * 
+   * Upserts user filters.
+   */
+  'DashboardUpsertUserFilter'(
+    parameters?: Parameters<Paths.DashboardUpsertUserFilter.PathParameters> | null,
+    data?: Paths.DashboardUpsertUserFilter.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardUpsertUserFilter.Responses.$200>
+  /**
+   * DashboardListUserFilters - List user filters
+   * 
+   * Lists user filters.
+   */
+  'DashboardListUserFilters'(
+    parameters?: Parameters<Paths.DashboardListUserFilters.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardListUserFilters.Responses.$200>
+  /**
+   * DashboardListGroups - List Groups
+   * 
+   * Lists groups.
+   */
+  'DashboardListGroups'(
+    parameters?: Parameters<Paths.DashboardListGroups.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardListGroups.Responses.$200>
+  /**
+   * DashboardGetOrganizationDetails - Get Organization Details
+   */
+  'DashboardGetOrganizationDetails'(
+    parameters?: Parameters<Paths.DashboardGetOrganizationDetails.PathParameters> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardGetOrganizationDetails.Responses.$200>
+  /**
+   * DashboardListArchives - List Archives
+   */
+  'DashboardListArchives'(
+    parameters?: Parameters<Paths.DashboardListArchives.PathParameters> | null,
+    data?: Paths.DashboardListArchives.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardListArchives.Responses.$200>
+  /**
+   * DashboardReportsDeleteUser - Delete User
+   */
+  'DashboardReportsDeleteUser'(
+    parameters?: Parameters<Paths.DashboardReportsDeleteUser.PathParameters> | null,
+    data?: Paths.DashboardReportsDeleteUser.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardReportsDeleteUser.Responses.$200>
+  /**
+   * DashboardAppLogin - Login
+   */
+  'DashboardAppLogin'(
+    parameters?: Parameters<Paths.DashboardAppLogin.PathParameters> | null,
+    data?: Paths.DashboardAppLogin.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardAppLogin.Responses.$200>
+  /**
+   * DashboardReportsUpsertUser - Upsert User
+   */
+  'DashboardReportsUpsertUser'(
+    parameters?: Parameters<Paths.DashboardReportsUpsertUser.PathParameters> | null,
+    data?: Paths.DashboardReportsUpsertUser.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardReportsUpsertUser.Responses.$200>
   /**
    * DashboardReportsChatsSatisfaction - Chats Satisfaction
    */
@@ -3297,6 +3454,22 @@ export interface OperationMethods {
     data?: Paths.DashboardReportsChatsSatisfaction.RequestBody,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardReportsChatsSatisfaction.Responses.$200>
+  /**
+   * DashboardReportsTagsUsage - Tags Usage
+   */
+  'DashboardReportsTagsUsage'(
+    parameters?: Parameters<Paths.DashboardReportsTagsUsage.PathParameters> | null,
+    data?: Paths.DashboardReportsTagsUsage.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardReportsTagsUsage.Responses.$200>
+  /**
+   * DashboardReportsChatAvailability - Chat Availability
+   */
+  'DashboardReportsChatAvailability'(
+    parameters?: Parameters<Paths.DashboardReportsChatAvailability.PathParameters> | null,
+    data?: Paths.DashboardReportsChatAvailability.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardReportsChatAvailability.Responses.$200>
   /**
    * DashboardReportsMissedChats - Missed Chats
    */
@@ -3330,83 +3503,29 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardReportsChatDuration.Responses.$200>
   /**
-   * DashboardReportsChatAvailability - Chat Availability
+   * DashboardReportsFirstResponseTime - First Response Time
    */
-  'DashboardReportsChatAvailability'(
-    parameters?: Parameters<Paths.DashboardReportsChatAvailability.PathParameters> | null,
-    data?: Paths.DashboardReportsChatAvailability.RequestBody,
+  'DashboardReportsFirstResponseTime'(
+    parameters?: Parameters<Paths.DashboardReportsFirstResponseTime.PathParameters> | null,
+    data?: Paths.DashboardReportsFirstResponseTime.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardReportsChatAvailability.Responses.$200>
+  ): OperationResponse<Paths.DashboardReportsFirstResponseTime.Responses.$200>
   /**
-   * DashboardReportsTagsUsage - Tags Usage
+   * DashboardReportsAgentPerformance - Agent Performance
    */
-  'DashboardReportsTagsUsage'(
-    parameters?: Parameters<Paths.DashboardReportsTagsUsage.PathParameters> | null,
-    data?: Paths.DashboardReportsTagsUsage.RequestBody,
+  'DashboardReportsAgentPerformance'(
+    parameters?: Parameters<Paths.DashboardReportsAgentPerformance.PathParameters> | null,
+    data?: Paths.DashboardReportsAgentPerformance.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardReportsTagsUsage.Responses.$200>
+  ): OperationResponse<Paths.DashboardReportsAgentPerformance.Responses.$200>
   /**
-   * DashboardListAgents - List Agents
-   * 
-   * Lists agents.
+   * DashboardReportsResponseTime - Response Time
    */
-  'DashboardListAgents'(
-    parameters?: Parameters<Paths.DashboardListAgents.PathParameters> | null,
-    data?: any,
+  'DashboardReportsResponseTime'(
+    parameters?: Parameters<Paths.DashboardReportsResponseTime.PathParameters> | null,
+    data?: Paths.DashboardReportsResponseTime.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardListAgents.Responses.$200>
-  /**
-   * DashboardGetOrganizationDetails - Get Organization Details
-   */
-  'DashboardGetOrganizationDetails'(
-    parameters?: Parameters<Paths.DashboardGetOrganizationDetails.PathParameters> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardGetOrganizationDetails.Responses.$200>
-  /**
-   * dashboardLogOut - Log Out
-   * 
-   * Logs out from dashboard
-   */
-  'dashboardLogOut'(
-    parameters?: Parameters<Paths.DashboardLogOut.PathParameters> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardLogOut.Responses.$200>
-  /**
-   * DashboardListArchives - List Archives
-   */
-  'DashboardListArchives'(
-    parameters?: Parameters<Paths.DashboardListArchives.PathParameters> | null,
-    data?: Paths.DashboardListArchives.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardListArchives.Responses.$200>
-  /**
-   * DashboardAppLogin - Login
-   */
-  'DashboardAppLogin'(
-    parameters?: Parameters<Paths.DashboardAppLogin.PathParameters> | null,
-    data?: Paths.DashboardAppLogin.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardAppLogin.Responses.$200>
-  /**
-   * DashboardReportsUpsertUser - Upsert User
-   */
-  'DashboardReportsUpsertUser'(
-    parameters?: Parameters<Paths.DashboardReportsUpsertUser.PathParameters> | null,
-    data?: Paths.DashboardReportsUpsertUser.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardReportsUpsertUser.Responses.$200>
-  /**
-   * verifyDashboardToken - Verify Dashboard Token
-   * 
-   * Verifies the dashboard token
-   */
-  'verifyDashboardToken'(
-    parameters?: Parameters<Paths.VerifyDashboardToken.PathParameters> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.VerifyDashboardToken.Responses.$200>
+  ): OperationResponse<Paths.DashboardReportsResponseTime.Responses.$200>
   /**
    * DashboardWhiteLabel - White Label
    */
@@ -3416,15 +3535,13 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardWhiteLabel.Responses.$200>
   /**
-   * DashboardListGroups - List Groups
-   * 
-   * Lists groups.
+   * DashboardReportsListTags - List Tags
    */
-  'DashboardListGroups'(
-    parameters?: Parameters<Paths.DashboardListGroups.PathParameters> | null,
-    data?: any,
+  'DashboardReportsListTags'(
+    parameters?: Parameters<Paths.DashboardReportsListTags.PathParameters> | null,
+    data?: Paths.DashboardReportsListTags.RequestBody,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardListGroups.Responses.$200>
+  ): OperationResponse<Paths.DashboardReportsListTags.Responses.$200>
   /**
    * DashboardListUsers - List Users
    * 
@@ -3436,21 +3553,23 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardListUsers.Responses.$200>
   /**
-   * DashboardReportsListTags - List Tags
+   * verifyDashboardToken - Verify Dashboard Token
+   * 
+   * Verifies the dashboard token
    */
-  'DashboardReportsListTags'(
-    parameters?: Parameters<Paths.DashboardReportsListTags.PathParameters> | null,
-    data?: Paths.DashboardReportsListTags.RequestBody,
+  'verifyDashboardToken'(
+    parameters?: Parameters<Paths.VerifyDashboardToken.PathParameters> | null,
+    data?: any,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardReportsListTags.Responses.$200>
+  ): OperationResponse<Paths.VerifyDashboardToken.Responses.$200>
   /**
-   * DashboardReportsDeleteUser - Delete User
+   * InstallLiveChatApp
    */
-  'DashboardReportsDeleteUser'(
-    parameters?: Parameters<Paths.DashboardReportsDeleteUser.PathParameters> | null,
-    data?: Paths.DashboardReportsDeleteUser.RequestBody,
+  'InstallLiveChatApp'(
+    parameters?: Parameters<Paths.InstallLiveChatApp.QueryParameters & Paths.InstallLiveChatApp.PathParameters> | null,
+    data?: any,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.DashboardReportsDeleteUser.Responses.$200>
+  ): OperationResponse<Paths.InstallLiveChatApp.Responses.$200>
   /**
    * listGroups - List Groups
    */
@@ -3459,14 +3578,6 @@ export interface OperationMethods {
     data?: any,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.ListGroups.Responses.$200>
-  /**
-   * GetAppDetails - Get App Details
-   */
-  'GetAppDetails'(
-    parameters?: Parameters<Paths.GetAppDetails.PathParameters> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.GetAppDetails.Responses.$200>
   /**
    * Authenticate - Verify
    * 
@@ -3478,43 +3589,27 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.Authenticate.Responses.$200>
   /**
-   * TranslatorsGetDetails - Get Translator Details
+   * GetAppDetails - Get App Details
    */
-  'TranslatorsGetDetails'(
-    parameters?: Parameters<Paths.TranslatorsGetDetails.PathParameters> | null,
+  'GetAppDetails'(
+    parameters?: Parameters<Paths.GetAppDetails.PathParameters> | null,
     data?: any,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.TranslatorsGetDetails.Responses.$200>
-  /**
-   * TranslatorsUpdateDetails - Update Translator Details
-   */
-  'TranslatorsUpdateDetails'(
-    parameters?: Parameters<Paths.TranslatorsUpdateDetails.PathParameters> | null,
-    data?: Paths.TranslatorsUpdateDetails.RequestBody,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.TranslatorsUpdateDetails.Responses.$200>
-  /**
-   * InstallLiveChatApp
-   */
-  'InstallLiveChatApp'(
-    parameters?: Parameters<Paths.InstallLiveChatApp.QueryParameters & Paths.InstallLiveChatApp.PathParameters> | null,
-    data?: any,
-    config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.InstallLiveChatApp.Responses.$200>
+  ): OperationResponse<Paths.GetAppDetails.Responses.$200>
 }
 
 export interface PathsDictionary {
-  ['/api/crm/admin/delete_scope']: {
+  ['/api/crm/admin/upsert_role']: {
     /**
-     * crmAdminDeleteScope - Delete Scope
+     * crmAdminUpsertRole - Upsert Role
      * 
-     * Delete a CRM Scope
+     * Upsert a CRM Role
      */
     'post'(
       parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.CrmAdminDeleteScope.RequestBody,
+      data?: Paths.CrmAdminUpsertRole.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAdminDeleteScope.Responses.$200>
+    ): OperationResponse<Paths.CrmAdminUpsertRole.Responses.$200>
   }
   ['/api/crm/admin/list_scopes']: {
     /**
@@ -3528,6 +3623,18 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAdminListScopes.Responses.$200>
   }
+  ['/api/crm/admin/delete_role']: {
+    /**
+     * crmAdminDeleteRole - Delete Role
+     * 
+     * Delete a CRM Role
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.CrmAdminDeleteRole.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmAdminDeleteRole.Responses.$200>
+  }
   ['/api/crm/admin/upsert_scope']: {
     /**
      * crmAdminUpsertScope - Upsert Scope
@@ -3539,6 +3646,18 @@ export interface PathsDictionary {
       data?: Paths.CrmAdminUpsertScope.RequestBody,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAdminUpsertScope.Responses.$200>
+  }
+  ['/api/crm/admin/delete_scope']: {
+    /**
+     * crmAdminDeleteScope - Delete Scope
+     * 
+     * Delete a CRM Scope
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.CrmAdminDeleteScope.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmAdminDeleteScope.Responses.$200>
   }
   ['/api/crm/admin/upsert_user']: {
     /**
@@ -3564,42 +3683,6 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAdminListUsers.Responses.$200>
   }
-  ['/api/crm/admin/upsert_role']: {
-    /**
-     * crmAdminUpsertRole - Upsert Role
-     * 
-     * Upsert a CRM Role
-     */
-    'post'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.CrmAdminUpsertRole.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAdminUpsertRole.Responses.$200>
-  }
-  ['/api/crm/admin/delete_role']: {
-    /**
-     * crmAdminDeleteRole - Delete Role
-     * 
-     * Delete a CRM Role
-     */
-    'post'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.CrmAdminDeleteRole.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAdminDeleteRole.Responses.$200>
-  }
-  ['/api/crm/apps/upsert_app']: {
-    /**
-     * crmAppsUpsertApp - Upsert App
-     * 
-     * Upsert a CRM App
-     */
-    'post'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.CrmAppsUpsertApp.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAppsUpsertApp.Responses.$200>
-  }
   ['/api/crm/apps/list_apps']: {
     /**
      * crmAppsListApps - List Apps
@@ -3624,6 +3707,18 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAppsListAppKinds.Responses.$200>
   }
+  ['/api/crm/apps/upsert_app']: {
+    /**
+     * crmAppsUpsertApp - Upsert App
+     * 
+     * Upsert a CRM App
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.CrmAppsUpsertApp.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmAppsUpsertApp.Responses.$200>
+  }
   ['/api/crm/auth/verify_crm_token']: {
     /**
      * crmAuthVerifyCrmToken - Verify Token
@@ -3635,30 +3730,6 @@ export interface PathsDictionary {
       data?: Paths.CrmAuthVerifyCrmToken.RequestBody,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAuthVerifyCrmToken.Responses.$200>
-  }
-  ['/api/crm/auth/list_api_keys']: {
-    /**
-     * crmAuthListApiKeys - List API Keys
-     * 
-     * Lists API keys.
-     */
-    'get'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAuthListApiKeys.Responses.$200>
-  }
-  ['/api/crm/auth/logout']: {
-    /**
-     * crmAuthLogOut - Log Out
-     * 
-     * Logs out from CRM
-     */
-    'post'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.CrmAuthLogOut.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAuthLogOut.Responses.$200>
   }
   ['/api/crm/auth/update_password']: {
     /**
@@ -3672,17 +3743,29 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAuthUpdatePassword.Responses.$200>
   }
-  ['/api/crm/auth/login']: {
+  ['/api/crm/auth/list_sessions']: {
     /**
-     * crmAuthLogin - Log In
+     * crmAuthListSessions - List Sessions
      * 
-     * logins to CRM
+     * Lists sessions.
+     */
+    'get'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmAuthListSessions.Responses.$200>
+  }
+  ['/api/crm/auth/logout']: {
+    /**
+     * crmAuthLogOut - Log Out
+     * 
+     * Logs out from CRM
      */
     'post'(
       parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.CrmAuthLogin.RequestBody,
+      data?: Paths.CrmAuthLogOut.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAuthLogin.Responses.$200>
+    ): OperationResponse<Paths.CrmAuthLogOut.Responses.$200>
   }
   ['/api/crm/auth/deactivate_api_key']: {
     /**
@@ -3696,18 +3779,6 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAuthDeactivateApiKey.Responses.$200>
   }
-  ['/api/crm/auth/list_sessions']: {
-    /**
-     * crmAuthListSessions - List Sessions
-     * 
-     * Lists sessions.
-     */
-    'get'(
-      parameters?: Parameters<UnknownParamsObject> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAuthListSessions.Responses.$200>
-  }
   ['/api/crm/auth/create_api_key']: {
     /**
      * crmAuthCreateApiKey - Create API Key
@@ -3720,35 +3791,171 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAuthCreateApiKey.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/reports/response_time']: {
+  ['/api/crm/auth/login']: {
     /**
-     * DashboardReportsResponseTime - Response Time
+     * crmAuthLogin - Log In
+     * 
+     * logins to CRM
      */
     'post'(
-      parameters?: Parameters<Paths.DashboardReportsResponseTime.PathParameters> | null,
-      data?: Paths.DashboardReportsResponseTime.RequestBody,
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.CrmAuthLogin.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardReportsResponseTime.Responses.$200>
+    ): OperationResponse<Paths.CrmAuthLogin.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/reports/first_response_time']: {
+  ['/api/crm/auth/list_api_keys']: {
     /**
-     * DashboardReportsFirstResponseTime - First Response Time
+     * crmAuthListApiKeys - List API Keys
+     * 
+     * Lists API keys.
      */
-    'post'(
-      parameters?: Parameters<Paths.DashboardReportsFirstResponseTime.PathParameters> | null,
-      data?: Paths.DashboardReportsFirstResponseTime.RequestBody,
+    'get'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: any,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardReportsFirstResponseTime.Responses.$200>
+    ): OperationResponse<Paths.CrmAuthListApiKeys.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/reports/agent_performance']: {
+  ['/api/{app_slug}/translator/config/update']: {
     /**
-     * DashboardReportsAgentPerformance - Agent Performance
+     * TranslatorsUpdateDetails - Update Translator Details
      */
     'post'(
-      parameters?: Parameters<Paths.DashboardReportsAgentPerformance.PathParameters> | null,
-      data?: Paths.DashboardReportsAgentPerformance.RequestBody,
+      parameters?: Parameters<Paths.TranslatorsUpdateDetails.PathParameters> | null,
+      data?: Paths.TranslatorsUpdateDetails.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardReportsAgentPerformance.Responses.$200>
+    ): OperationResponse<Paths.TranslatorsUpdateDetails.Responses.$200>
+  }
+  ['/api/{app_slug}/translator/config/get']: {
+    /**
+     * TranslatorsGetDetails - Get Translator Details
+     */
+    'get'(
+      parameters?: Parameters<Paths.TranslatorsGetDetails.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.TranslatorsGetDetails.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/list_agents']: {
+    /**
+     * DashboardListAgents - List Agents
+     * 
+     * Lists agents.
+     */
+    'get'(
+      parameters?: Parameters<Paths.DashboardListAgents.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardListAgents.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/logout']: {
+    /**
+     * dashboardLogOut - Log Out
+     * 
+     * Logs out from dashboard
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardLogOut.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardLogOut.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/filters/delete_filter']: {
+    /**
+     * DashboardDeleteUserFilter - Delete user filters
+     * 
+     * Deletes user filters.
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardDeleteUserFilter.PathParameters> | null,
+      data?: Paths.DashboardDeleteUserFilter.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardDeleteUserFilter.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/filters/upsert_filter']: {
+    /**
+     * DashboardUpsertUserFilter - Upsert user filters
+     * 
+     * Upserts user filters.
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardUpsertUserFilter.PathParameters> | null,
+      data?: Paths.DashboardUpsertUserFilter.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardUpsertUserFilter.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/filters/list_filters']: {
+    /**
+     * DashboardListUserFilters - List user filters
+     * 
+     * Lists user filters.
+     */
+    'get'(
+      parameters?: Parameters<Paths.DashboardListUserFilters.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardListUserFilters.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/list_groups']: {
+    /**
+     * DashboardListGroups - List Groups
+     * 
+     * Lists groups.
+     */
+    'get'(
+      parameters?: Parameters<Paths.DashboardListGroups.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardListGroups.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/get_organization_details']: {
+    /**
+     * DashboardGetOrganizationDetails - Get Organization Details
+     */
+    'get'(
+      parameters?: Parameters<Paths.DashboardGetOrganizationDetails.PathParameters> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardGetOrganizationDetails.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/list_archives']: {
+    /**
+     * DashboardListArchives - List Archives
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardListArchives.PathParameters> | null,
+      data?: Paths.DashboardListArchives.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardListArchives.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/reports/delete_user']: {
+    /**
+     * DashboardReportsDeleteUser - Delete User
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsDeleteUser.PathParameters> | null,
+      data?: Paths.DashboardReportsDeleteUser.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardReportsDeleteUser.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/login']: {
+    /**
+     * DashboardAppLogin - Login
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardAppLogin.PathParameters> | null,
+      data?: Paths.DashboardAppLogin.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardAppLogin.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/upsert_user']: {
+    /**
+     * DashboardReportsUpsertUser - Upsert User
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsUpsertUser.PathParameters> | null,
+      data?: Paths.DashboardReportsUpsertUser.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardReportsUpsertUser.Responses.$200>
   }
   ['/api/{app_slug}/dashboard/reports/chats_satisfaction']: {
     /**
@@ -3759,6 +3966,26 @@ export interface PathsDictionary {
       data?: Paths.DashboardReportsChatsSatisfaction.RequestBody,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardReportsChatsSatisfaction.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/reports/tags_usage']: {
+    /**
+     * DashboardReportsTagsUsage - Tags Usage
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsTagsUsage.PathParameters> | null,
+      data?: Paths.DashboardReportsTagsUsage.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardReportsTagsUsage.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/reports/chat_availability']: {
+    /**
+     * DashboardReportsChatAvailability - Chat Availability
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsChatAvailability.PathParameters> | null,
+      data?: Paths.DashboardReportsChatAvailability.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardReportsChatAvailability.Responses.$200>
   }
   ['/api/{app_slug}/dashboard/reports/missed_chats']: {
     /**
@@ -3800,101 +4027,35 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardReportsChatDuration.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/reports/chat_availability']: {
+  ['/api/{app_slug}/dashboard/reports/first_response_time']: {
     /**
-     * DashboardReportsChatAvailability - Chat Availability
+     * DashboardReportsFirstResponseTime - First Response Time
      */
     'post'(
-      parameters?: Parameters<Paths.DashboardReportsChatAvailability.PathParameters> | null,
-      data?: Paths.DashboardReportsChatAvailability.RequestBody,
+      parameters?: Parameters<Paths.DashboardReportsFirstResponseTime.PathParameters> | null,
+      data?: Paths.DashboardReportsFirstResponseTime.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardReportsChatAvailability.Responses.$200>
+    ): OperationResponse<Paths.DashboardReportsFirstResponseTime.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/reports/tags_usage']: {
+  ['/api/{app_slug}/dashboard/reports/agent_performance']: {
     /**
-     * DashboardReportsTagsUsage - Tags Usage
+     * DashboardReportsAgentPerformance - Agent Performance
      */
     'post'(
-      parameters?: Parameters<Paths.DashboardReportsTagsUsage.PathParameters> | null,
-      data?: Paths.DashboardReportsTagsUsage.RequestBody,
+      parameters?: Parameters<Paths.DashboardReportsAgentPerformance.PathParameters> | null,
+      data?: Paths.DashboardReportsAgentPerformance.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardReportsTagsUsage.Responses.$200>
+    ): OperationResponse<Paths.DashboardReportsAgentPerformance.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/list_agents']: {
+  ['/api/{app_slug}/dashboard/reports/response_time']: {
     /**
-     * DashboardListAgents - List Agents
-     * 
-     * Lists agents.
-     */
-    'get'(
-      parameters?: Parameters<Paths.DashboardListAgents.PathParameters> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardListAgents.Responses.$200>
-  }
-  ['/api/{app_slug}/dashboard/get_organization_details']: {
-    /**
-     * DashboardGetOrganizationDetails - Get Organization Details
-     */
-    'get'(
-      parameters?: Parameters<Paths.DashboardGetOrganizationDetails.PathParameters> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardGetOrganizationDetails.Responses.$200>
-  }
-  ['/api/{app_slug}/dashboard/logout']: {
-    /**
-     * dashboardLogOut - Log Out
-     * 
-     * Logs out from dashboard
+     * DashboardReportsResponseTime - Response Time
      */
     'post'(
-      parameters?: Parameters<Paths.DashboardLogOut.PathParameters> | null,
-      data?: any,
+      parameters?: Parameters<Paths.DashboardReportsResponseTime.PathParameters> | null,
+      data?: Paths.DashboardReportsResponseTime.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardLogOut.Responses.$200>
-  }
-  ['/api/{app_slug}/dashboard/list_archives']: {
-    /**
-     * DashboardListArchives - List Archives
-     */
-    'post'(
-      parameters?: Parameters<Paths.DashboardListArchives.PathParameters> | null,
-      data?: Paths.DashboardListArchives.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardListArchives.Responses.$200>
-  }
-  ['/api/{app_slug}/dashboard/login']: {
-    /**
-     * DashboardAppLogin - Login
-     */
-    'post'(
-      parameters?: Parameters<Paths.DashboardAppLogin.PathParameters> | null,
-      data?: Paths.DashboardAppLogin.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardAppLogin.Responses.$200>
-  }
-  ['/api/{app_slug}/dashboard/upsert_user']: {
-    /**
-     * DashboardReportsUpsertUser - Upsert User
-     */
-    'post'(
-      parameters?: Parameters<Paths.DashboardReportsUpsertUser.PathParameters> | null,
-      data?: Paths.DashboardReportsUpsertUser.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardReportsUpsertUser.Responses.$200>
-  }
-  ['/api/{app_slug}/dashboard/verify']: {
-    /**
-     * verifyDashboardToken - Verify Dashboard Token
-     * 
-     * Verifies the dashboard token
-     */
-    'get'(
-      parameters?: Parameters<Paths.VerifyDashboardToken.PathParameters> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.VerifyDashboardToken.Responses.$200>
+    ): OperationResponse<Paths.DashboardReportsResponseTime.Responses.$200>
   }
   ['/api/{app_slug}/dashboard/white_label']: {
     /**
@@ -3906,17 +4067,15 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardWhiteLabel.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/list_groups']: {
+  ['/api/{app_slug}/dashboard/reports/list_tags']: {
     /**
-     * DashboardListGroups - List Groups
-     * 
-     * Lists groups.
+     * DashboardReportsListTags - List Tags
      */
-    'get'(
-      parameters?: Parameters<Paths.DashboardListGroups.PathParameters> | null,
-      data?: any,
+    'post'(
+      parameters?: Parameters<Paths.DashboardReportsListTags.PathParameters> | null,
+      data?: Paths.DashboardReportsListTags.RequestBody,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardListGroups.Responses.$200>
+    ): OperationResponse<Paths.DashboardReportsListTags.Responses.$200>
   }
   ['/api/{app_slug}/dashboard/list_users']: {
     /**
@@ -3930,25 +4089,27 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardListUsers.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/reports/list_tags']: {
+  ['/api/{app_slug}/dashboard/verify']: {
     /**
-     * DashboardReportsListTags - List Tags
+     * verifyDashboardToken - Verify Dashboard Token
+     * 
+     * Verifies the dashboard token
      */
-    'post'(
-      parameters?: Parameters<Paths.DashboardReportsListTags.PathParameters> | null,
-      data?: Paths.DashboardReportsListTags.RequestBody,
+    'get'(
+      parameters?: Parameters<Paths.VerifyDashboardToken.PathParameters> | null,
+      data?: any,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardReportsListTags.Responses.$200>
+    ): OperationResponse<Paths.VerifyDashboardToken.Responses.$200>
   }
-  ['/api/{app_slug}/dashboard/reports/delete_user']: {
+  ['/api/{app_slug}/install']: {
     /**
-     * DashboardReportsDeleteUser - Delete User
+     * InstallLiveChatApp
      */
-    'post'(
-      parameters?: Parameters<Paths.DashboardReportsDeleteUser.PathParameters> | null,
-      data?: Paths.DashboardReportsDeleteUser.RequestBody,
+    'get'(
+      parameters?: Parameters<Paths.InstallLiveChatApp.QueryParameters & Paths.InstallLiveChatApp.PathParameters> | null,
+      data?: any,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.DashboardReportsDeleteUser.Responses.$200>
+    ): OperationResponse<Paths.InstallLiveChatApp.Responses.$200>
   }
   ['/api/{app_slug}/lc/list_groups']: {
     /**
@@ -3959,16 +4120,6 @@ export interface PathsDictionary {
       data?: any,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.ListGroups.Responses.$200>
-  }
-  ['/api/{app_slug}/app_details']: {
-    /**
-     * GetAppDetails - Get App Details
-     */
-    'get'(
-      parameters?: Parameters<Paths.GetAppDetails.PathParameters> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.GetAppDetails.Responses.$200>
   }
   ['/api/{app_slug}/auth/verify']: {
     /**
@@ -3982,35 +4133,15 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.Authenticate.Responses.$200>
   }
-  ['/api/{app_slug}/translator/config/get']: {
+  ['/api/{app_slug}/app_details']: {
     /**
-     * TranslatorsGetDetails - Get Translator Details
+     * GetAppDetails - Get App Details
      */
     'get'(
-      parameters?: Parameters<Paths.TranslatorsGetDetails.PathParameters> | null,
+      parameters?: Parameters<Paths.GetAppDetails.PathParameters> | null,
       data?: any,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.TranslatorsGetDetails.Responses.$200>
-  }
-  ['/api/{app_slug}/translator/config/update']: {
-    /**
-     * TranslatorsUpdateDetails - Update Translator Details
-     */
-    'post'(
-      parameters?: Parameters<Paths.TranslatorsUpdateDetails.PathParameters> | null,
-      data?: Paths.TranslatorsUpdateDetails.RequestBody,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.TranslatorsUpdateDetails.Responses.$200>
-  }
-  ['/api/{app_slug}/install']: {
-    /**
-     * InstallLiveChatApp
-     */
-    'get'(
-      parameters?: Parameters<Paths.InstallLiveChatApp.QueryParameters & Paths.InstallLiveChatApp.PathParameters> | null,
-      data?: any,
-      config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.InstallLiveChatApp.Responses.$200>
+    ): OperationResponse<Paths.GetAppDetails.Responses.$200>
   }
 }
 
@@ -4046,6 +4177,7 @@ export type CustomVariable = Components.Schemas.CustomVariable;
 export type Customer = Components.Schemas.Customer;
 export type CustomerNotes = Components.Schemas.CustomerNotes;
 export type DashboardDetails = Components.Schemas.DashboardDetails;
+export type DashboardFilter = Components.Schemas.DashboardFilter;
 export type DashboardSession = Components.Schemas.DashboardSession;
 export type DashboardUser = Components.Schemas.DashboardUser;
 export type DurationFilters = Components.Schemas.DurationFilters;

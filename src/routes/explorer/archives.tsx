@@ -185,6 +185,7 @@ function RouteComponent() {
               style={{ width: 200 }}
               onChange={(val) => setFilters({ ...filters, group_ids: val.length ? val : undefined })}
               allowClear
+              maxTagCount={3}
             />
           </div>
           {/* QUERY */}
@@ -227,6 +228,7 @@ function RouteComponent() {
               style={{ width: 200 }}
               onChange={(val) => setFilters({ ...filters, agents: val })}
               allowClear
+              maxTagCount={3}
             />
           </div>
           <div>
@@ -239,6 +241,7 @@ function RouteComponent() {
               mode="multiple"
               onChange={(val) => setFilters({ ...filters, tags: val })}
               allowClear
+              maxTagCount={3}
             />
           </div>
           <div>

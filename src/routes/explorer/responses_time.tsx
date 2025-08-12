@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { DatePicker, Select, Spin, Table } from 'antd'
+import { DatePicker, Select, Spin } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { formatDate } from './total_chats_report'
 import type { Paths } from '../../openapi'
@@ -71,6 +71,7 @@ function RouteComponent() {
           style={{ width: 200 }}
           onChange={(val) => setFilters({ ...filters, groups: val.length ? val : undefined })}
           allowClear
+          maxTagCount={3}
         />
       </div>
       {/* DATE RANGE */}
@@ -107,7 +108,7 @@ function RouteComponent() {
               agents
             })
           }}
-
+          maxTagCount={3}
         />
       </div>
       <div className='flex flex-col gap-2 justify-start'>
@@ -125,6 +126,7 @@ function RouteComponent() {
               tags
             })
           }}
+          maxTagCount={3}
         />
       </div>
 

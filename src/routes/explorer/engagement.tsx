@@ -1,13 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { DatePicker, Select, Spin } from 'antd'
+import dayjs from 'dayjs'
 import { useContext, useEffect, useState } from 'react'
+import Chart from "react-apexcharts"
+import API from '../../api/api'
 import type { Paths } from '../../openapi'
 import { ReportContext } from './route'
-import API from '../../api/api'
 import { formatDate } from './total_chats_report'
-import dayjs from 'dayjs'
-import { DatePicker, Select, Spin, Table } from 'antd'
-import Chart from "react-apexcharts"
-import HeatMap from '../../components/HeatMap'
 
 export const Route = createFileRoute('/explorer/engagement')({
   component: RouteComponent,
@@ -71,6 +70,7 @@ function RouteComponent() {
           style={{ width: 200 }}
           onChange={(val) => setFilters({ ...filters, groups: val.length ? val : undefined })}
           allowClear
+          maxTagCount={3}
         />
       </div>
       {/* DATE RANGE */}
@@ -105,7 +105,7 @@ function RouteComponent() {
               agents
             })
           }}
-
+          maxTagCount={3}
         />
       </div>
       <div className='flex flex-col gap-2 justify-start'>
@@ -123,6 +123,7 @@ function RouteComponent() {
               tags
             })
           }}
+          maxTagCount={3}
         />
       </div>
 

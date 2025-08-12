@@ -84,6 +84,7 @@ function RouteComponent() {
                     value={filters.groups?.length ? filters.groups : (selectedGroup ? [selectedGroup]: [])}
                     onChange={(val) => setFilters({ ...filters, groups: val.length ? val : undefined })}
                     allowClear
+                    maxTagCount={3}
                 />
             </div>
             {/* DATE RANGE */}
@@ -118,7 +119,7 @@ function RouteComponent() {
                             agents
                         })
                     }}
-
+                    maxTagCount={3}
                 />
             </div>
             <div className='flex flex-col gap-2 justify-start'>
@@ -136,6 +137,7 @@ function RouteComponent() {
                             tags
                         })
                     }}
+                    maxTagCount={3}
                 />
             </div>
 
