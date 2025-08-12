@@ -47,7 +47,7 @@ const getAgents = async () => {
   }
 };
 
-const getTags = async (group_id: number) => {
+const getTags = async (group_ids: number[]) => {
   try {
     const client = await API();
     const { data } = await client.DashboardReportsListTags(
@@ -55,7 +55,7 @@ const getTags = async (group_id: number) => {
         app_slug: import.meta.env.VITE_APP_SLUG,
       },
       {
-        groups: [group_id],
+        groups: group_ids,
       }
     );
     return data;
@@ -182,17 +182,32 @@ function RouteComponent() {
     });
   }, []);
 
-  useEffect(() => {
-    if (!selectedGroup && selectedGroup !== 0) return;
-    getTags(selectedGroup).then((r) => {
-      setTags(r);
-    });
-    getAgents().then((r) => {
-      setAgents([
-        ...r.filter((r) => r.groups.find((g) => g.id == selectedGroup)),
-      ]);
-    });
-  }, [selectedGroup]);
+useEffect(() => {
+  if (!selectedGroup && selectedGroup !== 0) return;
+
+  // 1. Fetch tags and filter by groups
+  getTags(groups.map((g) => g.id)).then((tagsResponse) => {
+    setTags(
+      tagsResponse.filter(tag =>
+        tag.group_ids.some((groupId: number) =>
+          groups.some(g => g.id === groupId)
+        )
+      )
+    );
+  });
+
+  // 2. Fetch agents and filter them based on available groups
+  getAgents().then((agentsResponse) => {
+    setAgents(
+      agentsResponse.filter((agent) =>
+        agent.groups.some((group: { id: number; priority: string }) =>
+          groups.some((g) => g.id === group.id)
+        )
+      )
+    );
+  });
+
+}, [selectedGroup, groups]); // include groups if it can change
 
   if (status === "loading")
     return (

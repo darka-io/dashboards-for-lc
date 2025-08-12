@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Avatar, DatePicker, Select, Spin, Typography } from 'antd'
+import { Avatar, DatePicker, List, Select, Spin, Typography } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { formatDate } from './total_chats_report'
 import dayjs from 'dayjs'
@@ -23,7 +23,7 @@ function RouteComponent() {
     groups: []
   })
 
-  const { agents, tags, selectedGroup, groups } = useContext(ReportContext)
+  const { agents, selectedGroup, groups } = useContext(ReportContext)
 
   const [data, setData] = useState<Paths.DashboardReportsAgentPerformance.Responses.$200>()
   const [loading, setLoading] = useState(false)
