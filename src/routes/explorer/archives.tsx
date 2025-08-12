@@ -35,9 +35,6 @@ function RouteComponent() {
   const selectedVisitor = selectedChat?.users.find(
     (u) => u.type === "customer"
   );
-  const [selectedSet, setSelectedSet] = useState<
-    Paths.DashboardListUserFilters.Responses.$200[number]
-  >({});
 
   // translations showing and hiding
   const [shownTranslations, setShownTranslations] = useState<
@@ -283,12 +280,13 @@ function RouteComponent() {
               style={{ width: 200 }}
               onChange={(val) => setFilters({ ...filters, rating: val })}
               allowClear
+              value={filters.rating ? filters.rating : undefined}
             />
           </div>
 
           <div>
             <div className="text-sm font-semibold text-gray-500 mb-2">
-              Filter Sets
+              Saved Filters
             </div>
             <div>
               <Select
@@ -297,14 +295,13 @@ function RouteComponent() {
                     ? userFilters.map((f) => ({ label: f.name, value: f.id }))
                     : []
                 }
-                placeholder="Filter Sets"
+                placeholder="Saved Filters"
                 style={{ width: 200 }}
                 onChange={(val) => {
                   const selectedFilters = userFilters?.find(
                     (f) => f.id === val
                   );
                   if (selectedFilters) {
-                    setSelectedSet(selectedFilters);
                     setFilters({
                       ...filters,
                       agents: selectedFilters.agents,
@@ -323,14 +320,12 @@ function RouteComponent() {
                         : selectedFilters.to
                           ? selectedFilters.to
                           : undefined,
+                      rating: selectedFilters.rating ? selectedFilters.rating : undefined,
                     });
-                  } else {
-                    setSelectedSet({});
                   }
                 }}
                 allowClear
                 onClear={() => {
-                  setSelectedSet({});
                   setFilters({});
                 }}
               />

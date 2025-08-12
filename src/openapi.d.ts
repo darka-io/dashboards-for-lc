@@ -495,6 +495,7 @@ declare namespace Components {
             agents?: string[];
             tags?: string[];
             groups?: number[];
+            rating?: number | null;
         }
         export interface DashboardSession {
             id?: string;
@@ -3012,6 +3013,7 @@ declare namespace Paths {
             lastDate?: string;
             from?: string;
             to?: string;
+            rating?: number;
         }
         namespace Responses {
             export interface $200 {

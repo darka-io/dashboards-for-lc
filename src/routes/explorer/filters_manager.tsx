@@ -53,6 +53,7 @@ function RouteComponent() {
     agents?: string[];
     tags?: string[];
     groups?: number[];
+    rating?: number;
   }>({});
   const [dateMode, setDateMode] = useState<"fromTo" | "lastDates" | undefined>(
     undefined
@@ -148,10 +149,10 @@ function RouteComponent() {
                 ]}
                 allowClear
                 onClear={() => setDateMode(undefined)}
-                onSelect={() => {
-                  if (dateMode === "fromTo") {
+                onSelect={(val) => {
+                  if (val === "fromTo") {
                     setDateMode("fromTo");
-                  } else if (dateMode === "lastDates") {
+                  } else if (val === "lastDates") {
                     setDateMode("lastDates");
                   } else {
                     setDateMode(undefined);
@@ -163,7 +164,10 @@ function RouteComponent() {
 
           <Form.Item name={"from"} label="From" hidden={dateMode !== "fromTo"}>
             <DatePicker
-              disabled={dateMode === "lastDates"}
+              disabled={dateMode != "fromTo"}
+              disabledDate={(current) =>
+                current && current > dayjs().endOf("day")
+              }
               allowClear
               onChange={(v) => {
                 if (v) setDateMode("fromTo");
@@ -173,7 +177,10 @@ function RouteComponent() {
           </Form.Item>
           <Form.Item name={"to"} label="To" hidden={dateMode !== "fromTo"}>
             <DatePicker
-              disabled={dateMode === "lastDates"}
+              disabledDate={(current) =>
+                current && current > dayjs().endOf("day")
+              }
+              disabled={dateMode != "fromTo"}
               allowClear
               onChange={(v) => {
                 if (v) setDateMode("fromTo");
@@ -219,6 +226,17 @@ function RouteComponent() {
               mode="multiple"
               placeholder="Select Tags"
               options={tags?.map((t) => ({ label: t.name, value: t.name }))}
+            />
+          </Form.Item>
+          <Form.Item name={"rating"} label="Rating">
+            <Select
+              showSearch
+              placeholder="Select rating"
+              options={[
+                { label: "Bad", value: 0 },
+                { label: "Good", value: 1 },
+              ]}
+              allowClear
             />
           </Form.Item>
         </Form>
@@ -287,9 +305,19 @@ function RouteComponent() {
               },
             },
             {
+              title: "Rating",
+              render: (_, record) => {
+                return record.rating === 0
+                  ? "Bad"
+                  : record.rating === 1
+                    ? "Good"
+                    : "-";
+              },
+            },
+            {
               title: "Created At",
               render: (_, record) => {
-                return dayjs(record.createdAt).format("DD-MM-YYYY ");
+                return dayjs(record.createdAt).format("DD-MM-YYYY HH:MM");
               },
             },
             {
