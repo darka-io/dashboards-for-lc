@@ -320,7 +320,9 @@ function RouteComponent() {
                         : selectedFilters.to
                           ? selectedFilters.to
                           : undefined,
-                      rating: selectedFilters.rating ? selectedFilters.rating : undefined,
+                      rating: selectedFilters.rating
+                        ? selectedFilters.rating
+                        : undefined,
                     });
                   }
                 }}
@@ -380,14 +382,26 @@ function RouteComponent() {
                               </div>
                               {field.answer && (
                                 <div className="font-medium">
-                                  {field.answer}
+                                  {typeof field.answer === "string" ||
+                                  typeof field.answer === "number"
+                                    ? field.answer
+                                    : typeof field.answer === "object" &&
+                                        "label" in field.answer
+                                      ? (field.answer as { label: string })
+                                          .label
+                                      : JSON.stringify(field.answer)}
                                 </div>
                               )}
-                              {field.answers &&
-                                Array.isArray(field.answers) &&
+                              {Array.isArray(field.answers) &&
                                 field.answers.length > 0 && (
                                   <div className="font-medium">
-                                    {field.answers.join(", ")}
+                                    {field.answers
+                                      .map((a) =>
+                                        typeof a === "object" && "label" in a
+                                          ? a.label
+                                          : String(a)
+                                      )
+                                      .join(", ")}
                                   </div>
                                 )}
                             </div>
@@ -767,7 +781,12 @@ function RouteComponent() {
                       className="flex flex-row justify-between border-b gap-2 border-gray-200 p-1 items-center"
                     >
                       <div className="w-[200px] border-gray-200">{v.key}</div>
-                      <div className="text-gray-500 flex-1">{v.value}</div>
+                      <div className="text-gray-500 flex-1">
+                        {typeof v.value === "string" ||
+                        typeof v.value === "number"
+                          ? v.value
+                          : JSON.stringify(v.value)}
+                      </div>
                     </div>
                   ))
                 ) : (
