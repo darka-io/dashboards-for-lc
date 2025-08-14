@@ -496,6 +496,7 @@ declare namespace Components {
             tags?: string[];
             groups?: number[];
             rating?: number | null;
+            tagsMatchAll?: boolean;
         }
         export interface DashboardSession {
             id?: string;
@@ -2798,6 +2799,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+            tagsMatchAll?: boolean;
         }
         namespace Responses {
             export type $200 = /* ChatDurationReport */ Components.Schemas.ChatDurationReport;
@@ -2836,6 +2838,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+            tagsMatchAll?: boolean;
         }
         namespace Responses {
             export type $200 = /* ChatsSatisfactionReport */ Components.Schemas.ChatsSatisfactionReport;
@@ -2872,6 +2875,7 @@ declare namespace Paths {
             tags?: string[];
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+            tagsMatchAll?: boolean;
         }
         namespace Responses {
             export type $200 = /* FirstResponseTimeReport */ Components.Schemas.FirstResponseTimeReport;
@@ -2905,6 +2909,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+            tagsMatchAll?: boolean;
         }
         namespace Responses {
             export type $200 = /* TotalChatsReport */ Components.Schemas.TotalChatsReport;
@@ -2924,6 +2929,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+            tagsMatchAll?: boolean;
         }
         namespace Responses {
             export type $200 = /* ResponseTimeReport */ Components.Schemas.ResponseTimeReport;
@@ -2945,6 +2951,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+            tagsMatchAll?: boolean;
         }
         namespace Responses {
             export type $200 = /* TagsUsageReport */ Components.Schemas.TagsUsageReport;
@@ -2964,6 +2971,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+            tagsMatchAll?: boolean;
         }
         namespace Responses {
             export type $200 = /* TotalChatsReport */ Components.Schemas.TotalChatsReport;

@@ -7,8 +7,8 @@ import {
   message,
   Modal,
   Select,
-  Spin,
   Table,
+  Tag,
 } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { ReportContext } from "./route";
@@ -33,11 +33,7 @@ function RouteComponent() {
     setCurrentUserFilters(userFilters);
   }, [userFilters]);
 
-  const isTableLoading =
-    !agents?.length ||
-    !tags?.length ||
-    !groups?.length ||
-    !currentUserFilters?.length;
+  const isTableLoading = !agents?.length || !tags?.length || !groups?.length;
   const [messageApi, contextHolder] = message.useMessage();
   const [modal, contextModal] = Modal.useModal();
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,6 +50,7 @@ function RouteComponent() {
     tags?: string[];
     groups?: number[];
     rating?: number;
+    tagsMatchAll?: boolean;
   }>({});
   const [dateMode, setDateMode] = useState<"fromTo" | "lastDates" | undefined>(
     undefined
@@ -228,6 +225,16 @@ function RouteComponent() {
               options={tags?.map((t) => ({ label: t.name, value: t.name }))}
             />
           </Form.Item>
+          <Form.Item name={"tagsMatchAll"} label="Tags Mode">
+            <Select
+              showSearch
+              placeholder="Select Tags Mode"
+              options={[
+                { label: "Match All", value: true },
+                { label: "Match Any", value: false },
+              ]}
+            />
+          </Form.Item>
           <Form.Item name={"rating"} label="Rating">
             <Select
               showSearch
@@ -279,12 +286,17 @@ function RouteComponent() {
                     " - " +
                     dayjs(record.to).format("YYYY-MM-DD")
                   );
+                } else {
+                  return "-";
                 }
               },
             },
             {
               title: "Groups",
               render: (_, record) => {
+                if (record.groups?.length === 0) {
+                  return "-";
+                }
                 return record.groups
                   ?.map((g) => groups?.find((g2) => g2.id === g)?.name)
                   .join(", ");
@@ -293,6 +305,9 @@ function RouteComponent() {
             {
               title: "Agents",
               render: (_, record) => {
+                if (record.agents?.length === 0) {
+                  return "-";
+                }
                 return record.agents
                   ?.map((a) => agents?.find((a2) => a2.id === a)?.name)
                   .join(", ");
@@ -300,8 +315,17 @@ function RouteComponent() {
             },
             {
               title: "Tags",
+              render: (_, record) =>
+                record.tags?.length === 0 ? "-" :
+                record.tags?.map((tag, index) => <Tag key={index}>{tag}</Tag>),
+            },
+            {
+              title: "Tags Mode",
               render: (_, record) => {
-                return record.tags?.join(", ");
+                if (record.tags?.length === 0) {
+                  return "-";
+                }
+                return record.tagsMatchAll ? "Match All" : "Match Any";
               },
             },
             {
