@@ -43,6 +43,7 @@ function RouteComponent() {
       from: formatDate(dayjs().subtract(7, "day")),
       to: formatDate(dayjs()),
       distribution: "day",
+      tagsMode: "ANY",
     });
 
   useEffect(() => {
@@ -53,6 +54,7 @@ function RouteComponent() {
       groups: filters.groups?.length ? filters.groups : [selectedGroup],
       agents: filters.agents?.length ? filters.agents : undefined,
       tags: filters.tags?.length ? filters.tags : undefined,
+      tagsMode: filters.tagsMode ? filters.tagsMode : "ANY",
     });
   }, [selectedGroup, filters]);
 
@@ -151,6 +153,24 @@ function RouteComponent() {
           />
         </div>
 
+        <div>
+            {/* Tags Mode */}
+          <div className=" text-gray-400 text-[14px]">Tags Mode</div>
+          <Select
+            options={[
+              { label: "Match All", value: "ALL" },
+              { label: "Match Any", value: "ANY" },
+              { label: "Exclude", value: "EXCLUDE" },
+            ]}
+            placeholder="Tags Mode"
+            style={{ width: 200 }}
+            onChange={(val) => setFilters({ ...filters, tagsMode: val })}
+            allowClear
+            maxTagCount={3}
+            value={filters.tagsMode ? filters.tagsMode : "ANY"}
+          />
+        </div>
+
         <div className="flex flex-col gap-2 justify-start">
           <div className=" text-gray-400 text-[14px]">Saved Filters:</div>
           {/* SAVED FILTERS */}
@@ -169,6 +189,7 @@ function RouteComponent() {
                   ...filters,
                   agents: selectedFilters.agents,
                   tags: selectedFilters.tags,
+                  tagsMode: selectedFilters.tagsMode,
                   groups: selectedFilters.groups,
                   from:
                     selectedFilters.lastDates === "LAST_7_DAYS"

@@ -2696,7 +2696,7 @@ declare namespace Paths {
             group_ids?: number[];
             page_id?: string;
             query?: string;
-            tagsMatchAll?: boolean;
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* ListArchivesPayload */ Components.Schemas.ListArchivesPayload;

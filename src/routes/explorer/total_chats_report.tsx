@@ -70,6 +70,7 @@ function RouteComponent() {
       groups: filters.groups?.length ? filters.groups : [selectedGroup],
       agents: filters.agents?.length ? filters.agents : undefined,
       tags: filters.tags?.length ? filters.tags : undefined,
+      tagsMode: filters.tagsMode ?? "ANY",
     });
   }, [selectedGroup, filters]);
 
@@ -166,6 +167,24 @@ function RouteComponent() {
             maxTagCount={3}
             value={filters.tags?.length ? filters.tags : []}
             allowClear
+          />
+        </div>
+
+        <div>
+          {/* Tags Mode */}
+          <div className=" text-gray-400 text-[14px]">Tags Mode</div>
+          <Select
+            options={[
+              { label: "Match All", value: "ALL" },
+              { label: "Match Any", value: "ANY" },
+              { label: "Exclude", value: "EXCLUDE" },
+            ]}
+            placeholder="Tags Mode"
+            style={{ width: 200 }}
+            onChange={(val) => setFilters({ ...filters, tagsMode: val })}
+            allowClear
+            maxTagCount={3}
+            value={filters.tagsMode ? filters.tagsMode : "ANY"}
           />
         </div>
 

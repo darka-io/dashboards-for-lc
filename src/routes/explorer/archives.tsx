@@ -273,15 +273,16 @@ function RouteComponent() {
             </div>
             <Select
               options={[
-                { label: "Match All", value: true },
-                { label: "Match Any", value: false },
+                { label: "Match All", value: "ALL" },
+                { label: "Match Any", value: "ANY" },
+                { label: "Exclude", value: "EXCLUDE" },
               ]}
               placeholder="Tags Mode"
               style={{ width: 200 }}
-              onChange={(val) => setFilters({ ...filters, tagsMatchAll: val })}
+              onChange={(val) => setFilters({ ...filters, tagsMode: val })}
               allowClear
               maxTagCount={3}
-              value={filters.tagsMatchAll ? filters.tagsMatchAll : false}
+              value={filters.tagsMode ? filters.tagsMode : "ANY"}
             />
           </div>
 
@@ -341,6 +342,7 @@ function RouteComponent() {
                       rating: selectedFilters.rating
                         ? selectedFilters.rating
                         : undefined,
+                      tagsMode: selectedFilters.tagsMode
                     });
                   }
                 }}

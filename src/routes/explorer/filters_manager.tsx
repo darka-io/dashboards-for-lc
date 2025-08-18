@@ -50,7 +50,7 @@ function RouteComponent() {
     tags?: string[];
     groups?: number[];
     rating?: number;
-    tagsMatchAll?: boolean;
+    tagsMode?: "ALL" | "ANY" | "EXCLUDE";
   }>({});
   const [dateMode, setDateMode] = useState<"fromTo" | "lastDates" | undefined>(
     undefined
@@ -225,13 +225,14 @@ function RouteComponent() {
               options={tags?.map((t) => ({ label: t.name, value: t.name }))}
             />
           </Form.Item>
-          <Form.Item name={"tagsMatchAll"} label="Tags Mode">
+          <Form.Item name={"tagsMode"} label="Tags Mode">
             <Select
               showSearch
               placeholder="Select Tags Mode"
               options={[
-                { label: "Match All", value: true },
-                { label: "Match Any", value: false },
+                { label: "Match All", value: "ALL" },
+                { label: "Match Any", value: "ANY" },
+                { label: "Exclude", value: "EXCLUDE" },
               ]}
             />
           </Form.Item>
@@ -325,7 +326,7 @@ function RouteComponent() {
                 if (record.tags?.length === 0) {
                   return "-";
                 }
-                return record.tagsMatchAll ? "Match All" : "Match Any";
+                return record.tagsMode === "ALL" ? "Match All" : record.tagsMode === "ANY" ? "Match Any" : "Exclude";
               },
             },
             {
