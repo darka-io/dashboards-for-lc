@@ -236,11 +236,11 @@ function RouteComponent() {
               }
             />
           </div>
+
           <div>
             <div className="text-sm font-semibold text-gray-500 mb-2">
               Agents
             </div>
-
             <Select
               options={agents.map((a) => ({ label: a.name, value: a.id }))}
               placeholder="Agents"
@@ -252,9 +252,9 @@ function RouteComponent() {
               value={filters.agents?.length ? filters.agents : []}
             />
           </div>
+
           <div>
             <div className="text-sm font-semibold text-gray-500 mb-2">Tags</div>
-
             <Select
               options={tags.map((t) => ({ label: t.name, value: t.name }))}
               placeholder="Tags"
@@ -266,6 +266,25 @@ function RouteComponent() {
               value={filters.tags?.length ? filters.tags : []}
             />
           </div>
+
+          <div>
+            <div className="text-sm font-semibold text-gray-500 mb-2">
+              Tags Mode
+            </div>
+            <Select
+              options={[
+                { label: "Match All", value: true },
+                { label: "Match Any", value: false },
+              ]}
+              placeholder="Tags Mode"
+              style={{ width: 200 }}
+              onChange={(val) => setFilters({ ...filters, tagsMatchAll: val })}
+              allowClear
+              maxTagCount={3}
+              value={filters.tagsMatchAll ? filters.tagsMatchAll : false}
+            />
+          </div>
+
           <div>
             <div className="text-sm font-semibold text-gray-500 mb-2">
               Rating
@@ -283,7 +302,6 @@ function RouteComponent() {
               value={filters.rating ? filters.rating : undefined}
             />
           </div>
-
           <div>
             <div className="text-sm font-semibold text-gray-500 mb-2">
               Saved Filters

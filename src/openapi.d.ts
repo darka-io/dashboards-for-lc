@@ -496,7 +496,7 @@ declare namespace Components {
             tags?: string[];
             groups?: number[];
             rating?: number | null;
-            tagsMatchAll?: boolean;
+            tagsMode?: "ALL" | "ANY" | "EXCLUDE";
         }
         export interface DashboardSession {
             id?: string;
@@ -2696,6 +2696,7 @@ declare namespace Paths {
             group_ids?: number[];
             page_id?: string;
             query?: string;
+            tagsMatchAll?: boolean;
         }
         namespace Responses {
             export type $200 = /* ListArchivesPayload */ Components.Schemas.ListArchivesPayload;
@@ -2799,7 +2800,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
-            tagsMatchAll?: boolean;
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* ChatDurationReport */ Components.Schemas.ChatDurationReport;
@@ -2819,6 +2820,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* EngagementReport */ Components.Schemas.EngagementReport;
@@ -2838,7 +2840,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
-            tagsMatchAll?: boolean;
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* ChatsSatisfactionReport */ Components.Schemas.ChatsSatisfactionReport;
@@ -2875,7 +2877,7 @@ declare namespace Paths {
             tags?: string[];
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
-            tagsMatchAll?: boolean;
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* FirstResponseTimeReport */ Components.Schemas.FirstResponseTimeReport;
@@ -2909,7 +2911,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
-            tagsMatchAll?: boolean;
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* TotalChatsReport */ Components.Schemas.TotalChatsReport;
@@ -2929,7 +2931,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
-            tagsMatchAll?: boolean;
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* ResponseTimeReport */ Components.Schemas.ResponseTimeReport;
@@ -2951,7 +2953,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
-            tagsMatchAll?: boolean;
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* TagsUsageReport */ Components.Schemas.TagsUsageReport;
@@ -2971,7 +2973,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             distribution?: "hour" | "day" | "day-hours" | "month" | "year";
-            tagsMatchAll?: boolean;
+            tagsMode?: string;
         }
         namespace Responses {
             export type $200 = /* TotalChatsReport */ Components.Schemas.TotalChatsReport;
@@ -3043,6 +3045,31 @@ declare namespace Paths {
         namespace Responses {
             export interface $200 {
                 success: boolean;
+            }
+        }
+    }
+    namespace DashboardsGetOrganizationLogo {
+        namespace Parameters {
+            export type AppSlug = string;
+        }
+        export interface PathParameters {
+            app_slug?: Parameters.AppSlug;
+        }
+        export interface RequestBody {
+            domain: string;
+        }
+        namespace Responses {
+            export interface $200 {
+                logoURL?: string;
+            }
+            export interface $404 {
+                error?: string;
+            }
+            export interface $500 {
+                error: string;
+                message: {
+                    error_message: string;
+                };
             }
         }
     }
@@ -3439,6 +3466,14 @@ export interface OperationMethods {
     data?: Paths.DashboardReportsDeleteUser.RequestBody,
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.DashboardReportsDeleteUser.Responses.$200>
+  /**
+   * DashboardsGetOrganizationLogo - Get Organization Logo
+   */
+  'DashboardsGetOrganizationLogo'(
+    parameters?: Parameters<Paths.DashboardsGetOrganizationLogo.PathParameters> | null,
+    data?: Paths.DashboardsGetOrganizationLogo.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.DashboardsGetOrganizationLogo.Responses.$200>
   /**
    * DashboardAppLogin - Login
    */
@@ -3945,6 +3980,16 @@ export interface PathsDictionary {
       data?: Paths.DashboardReportsDeleteUser.RequestBody,
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.DashboardReportsDeleteUser.Responses.$200>
+  }
+  ['/api/{app_slug}/dashboard/get_organization_logo']: {
+    /**
+     * DashboardsGetOrganizationLogo - Get Organization Logo
+     */
+    'post'(
+      parameters?: Parameters<Paths.DashboardsGetOrganizationLogo.PathParameters> | null,
+      data?: Paths.DashboardsGetOrganizationLogo.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.DashboardsGetOrganizationLogo.Responses.$200>
   }
   ['/api/{app_slug}/dashboard/login']: {
     /**
