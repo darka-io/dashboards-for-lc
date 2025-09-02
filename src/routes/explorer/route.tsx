@@ -298,7 +298,7 @@ useEffect(() => {
             <div>
               <img
                 src={sessionData?.dashboardDetails.whiteLabelImage || "/logo.png"}
-                className="w-[200px] mx-auto py-4 max-h-[80px]"
+                className="max-w-[200px] mx-auto py-4 max-h-[200px]"
               />
             </div>
             {/* GROUP SELECTOR */}
