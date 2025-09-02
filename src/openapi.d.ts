@@ -238,6 +238,22 @@ declare namespace Components {
              */
             filters: /* AvailabilityFilters */ AvailabilityFilters;
         }
+        export interface Billing {
+            id?: string;
+            createdAt?: string; // date-time
+            updatedAt?: string; // date-time
+            CustomerId?: string;
+            name?: string | null;
+            AppSlug?: string | null;
+            type?: "MARKETPLACE_TRIAL" | "MARKETPLACE_SUBSCRIPTION" | "CUSTOM_SUBSCRIPTION" | "CUSTOM_TRIAL";
+            period?: "MONTHLY" | "ANNUAL" | "CUSTOM" | "ONE_TIME" | "THREE_MONTHS" | "SIX_MONTHS" | "TWO_YEARS" | "THREE_YEARS";
+            marketplaceFee?: number;
+            amount?: number;
+            trialStart?: string; // date-time
+            trialEnd?: string; // date-time
+            start?: string; // date-time
+            end?: string; // date-time
+        }
         /**
          * Button
          */
@@ -431,7 +447,14 @@ declare namespace Components {
             email?: string | null;
             phone?: string | null;
             role?: string | null;
-            notes?: string | null;
+        }
+        export interface ContactNotes {
+            id?: string;
+            createdAt?: string; // date-time
+            updatedAt?: string; // date-time
+            ContactId?: string;
+            text?: string;
+            attachments?: string[];
         }
         export interface CronJob {
             id?: string;
@@ -515,6 +538,7 @@ declare namespace Components {
             password?: string | null;
             groups?: number[];
             name?: string | null;
+            reportsAccess?: "TOTAL_CHATS" | "CHAT_ARCHIVES" | "CHAT_ENGAGEMENT" | "MISSED_CHATS" | "TAGS_USAGE" | "CHAT_SATISFACTION" | "CHAT_AVAILABILITY" | "CHAT_DURATION" | "AGENT_PERFORMANCE" | "CHAT_RESPONSES_TIME";
         }
         /**
          * DurationFilters
@@ -1427,10 +1451,21 @@ declare namespace Components {
             LicenceID?: number | null;
             createdAt?: string; // date-time
             updatedAt?: string; // date-time
-            appId?: string | null;
             translatorDetailsId?: string | null;
             appOrganizationAuthId?: string | null;
             customerID?: string | null;
+        }
+        export interface Payment {
+            id?: string;
+            createdAt?: string; // date-time
+            updatedAt?: string; // date-time
+            CustomerId?: string;
+            name?: string | null;
+            AppSlug?: string | null;
+            BillingId?: string;
+            amount?: number;
+            dueDate?: string; // date-time
+            status?: "PENDING" | "PAID" | "FAILED" | "CANCELLED";
         }
         /**
          * PerformanceAgentRecord
@@ -1727,7 +1762,7 @@ declare namespace Components {
             createdAt?: string; // date-time
             updatedAt?: string; // date-time
             UserId?: string;
-            RoleId?: string;
+            RoleName?: string;
         }
         export interface Scope {
             id?: string;
@@ -1737,8 +1772,8 @@ declare namespace Components {
         }
         export interface ScopeOnRole {
             id?: string;
-            RoleId?: string;
-            ScopeId?: string;
+            RoleName?: string;
+            ScopeName?: string;
             createdAt?: string; // date-time
             updatedAt?: string; // date-time
         }
@@ -1935,6 +1970,17 @@ declare namespace Components {
              * TestInterface.age
              */
             age: number;
+        }
+        export interface TextTeamMember {
+            id?: string;
+            createdAt?: string; // date-time
+            updatedAt?: string; // date-time
+            name?: string;
+            textRole?: "ACCOUNT_MANAGER" | "CUSTOMER_SUCCESS_MANAGER" | "PARTNER_PROGRAM" | "DEV_REL" | "L1" | "L2" | "L3";
+            description?: string | null;
+            email?: string | null;
+            phone?: string | null;
+            textTeam?: "SALES" | "SUPPORT" | "MARKETING" | "PARTNER_PROGRAM" | "DEV_MARKETPLACE";
         }
         /**
          * TextVars
@@ -2279,6 +2325,17 @@ declare namespace Paths {
             }
         }
     }
+    namespace CrmAdminListRoles {
+        namespace Responses {
+            export type $200 = {
+                id?: string;
+                name?: string;
+                createdAt?: string; // date-time
+                updatedAt?: string; // date-time
+                ScopeOnRole?: Components.Schemas.ScopeOnRole[];
+            }[];
+        }
+    }
     namespace CrmAdminListScopes {
         namespace Responses {
             export type $200 = Components.Schemas.Scope[];
@@ -2342,7 +2399,7 @@ declare namespace Paths {
                     createdAt?: string; // date-time
                     updatedAt?: string; // date-time
                     UserId?: string;
-                    RoleId?: string;
+                    RoleName?: string;
                     Role: Components.Schemas.Role;
                 }[];
             }[];
@@ -2352,7 +2409,7 @@ declare namespace Paths {
         export interface RequestBody {
             id?: string;
             name?: string;
-            scopes_ids?: string[];
+            scope_names?: string[];
         }
         namespace Responses {
             export interface $200 {
@@ -2389,16 +2446,14 @@ declare namespace Paths {
         export interface RequestBody {
             email: string;
             password: string;
+            name?: string;
+            id?: string;
+            role_names?: string[];
         }
         namespace Responses {
             export interface $200 {
-                status?: string;
                 message?: string;
-                session?: {
-                    id: string;
-                    token: string;
-                    expiresAt: string;
-                };
+                status?: string;
             }
             export interface $500 {
                 error: string;
@@ -2609,6 +2664,56 @@ declare namespace Paths {
             }
         }
     }
+    namespace CrmCustomersDeleteContact {
+        export interface RequestBody {
+            id?: string;
+        }
+        namespace Responses {
+            export interface $200 {
+                status?: string;
+                message?: string;
+            }
+            export interface $500 {
+                error: string;
+                message: {
+                    error_message: string;
+                };
+            }
+        }
+    }
+    namespace CrmCustomersListContacts {
+        namespace Responses {
+            export type $200 = Components.Schemas.Contact[];
+        }
+    }
+    namespace CrmCustomersListOrgs {
+        namespace Responses {
+            export type $200 = Components.Schemas.Organization[];
+        }
+    }
+    namespace CrmCustomersUpsertContact {
+        export interface RequestBody {
+            id?: string;
+            name?: string;
+            CustomerId?: string;
+            email?: string;
+            phone?: string;
+            role?: string;
+            note?: string;
+        }
+        namespace Responses {
+            export interface $200 {
+                status?: string;
+                message?: string;
+            }
+            export interface $500 {
+                error: string;
+                message: {
+                    error_message: string;
+                };
+            }
+        }
+    }
     namespace DashboardAppLogin {
         namespace Parameters {
             export type AppSlug = string;
@@ -2625,6 +2730,7 @@ declare namespace Paths {
                 success: boolean;
                 cookie: string;
                 cookieValue: string;
+                reportsAccess?: string;
             }
             export interface $500 {
                 error: string;
@@ -2992,6 +3098,7 @@ declare namespace Paths {
             password?: string;
             groups?: number[];
             name?: string;
+            reportsAccess?: string[];
         }
         namespace Responses {
             export interface $200 {
@@ -3023,6 +3130,7 @@ declare namespace Paths {
             from?: string;
             to?: string;
             rating?: number;
+            tagsMode?: string;
         }
         namespace Responses {
             export interface $200 {
@@ -3179,13 +3287,66 @@ declare namespace Paths {
             app_slug?: Parameters.AppSlug;
         }
         namespace Responses {
-            export type $200 = Components.Schemas.DashboardDetails;
+            export interface $200 {
+                dashboardDetails: Components.Schemas.DashboardDetails;
+                reportsAccess: string[];
+            }
         }
     }
 }
 
 
 export interface OperationMethods {
+  /**
+   * crmCustomersListContacts - List Contacts
+   * 
+   * Lists Contacts
+   */
+  'crmCustomersListContacts'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmCustomersListContacts.Responses.$200>
+  /**
+   * crmCustomersUpsertContact - Upsert Contact
+   * 
+   * Upsert a CRM Contact
+   */
+  'crmCustomersUpsertContact'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.CrmCustomersUpsertContact.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmCustomersUpsertContact.Responses.$200>
+  /**
+   * crmCustomersDeleteContact - Delete Contact
+   * 
+   * Delete a CRM Contact
+   */
+  'crmCustomersDeleteContact'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.CrmCustomersDeleteContact.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmCustomersDeleteContact.Responses.$200>
+  /**
+   * crmCustomersListOrgs - List Organizations
+   * 
+   * Lists Organizations
+   */
+  'crmCustomersListOrgs'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: any,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmCustomersListOrgs.Responses.$200>
+  /**
+   * crmAdminUpsertUser - Upsert User
+   * 
+   * Creates a CRM user
+   */
+  'crmAdminUpsertUser'(
+    parameters?: Parameters<UnknownParamsObject> | null,
+    data?: Paths.CrmAdminUpsertUser.RequestBody,
+    config?: AxiosRequestConfig  
+  ): OperationResponse<Paths.CrmAdminUpsertUser.Responses.$200>
   /**
    * crmAdminUpsertRole - Upsert Role
    * 
@@ -3197,15 +3358,15 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAdminUpsertRole.Responses.$200>
   /**
-   * crmAdminListScopes - List Scopes
+   * crmAdminListRoles - List Roles
    * 
-   * Lists Scopes.
+   * Lists Roles.
    */
-  'crmAdminListScopes'(
+  'crmAdminListRoles'(
     parameters?: Parameters<UnknownParamsObject> | null,
     data?: any,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAdminListScopes.Responses.$200>
+  ): OperationResponse<Paths.CrmAdminListRoles.Responses.$200>
   /**
    * crmAdminDeleteRole - Delete Role
    * 
@@ -3237,15 +3398,15 @@ export interface OperationMethods {
     config?: AxiosRequestConfig  
   ): OperationResponse<Paths.CrmAdminDeleteScope.Responses.$200>
   /**
-   * crmAdminUpsertUser - Upsert User
+   * crmAdminListScopes - List Scopes
    * 
-   * Creates a CRM user
+   * Lists Scopes.
    */
-  'crmAdminUpsertUser'(
+  'crmAdminListScopes'(
     parameters?: Parameters<UnknownParamsObject> | null,
-    data?: Paths.CrmAdminUpsertUser.RequestBody,
+    data?: any,
     config?: AxiosRequestConfig  
-  ): OperationResponse<Paths.CrmAdminUpsertUser.Responses.$200>
+  ): OperationResponse<Paths.CrmAdminListScopes.Responses.$200>
   /**
    * crmAdminListUsers - List Users
    * 
@@ -3643,6 +3804,66 @@ export interface OperationMethods {
 }
 
 export interface PathsDictionary {
+  ['/api/crm/customers/list_contacts']: {
+    /**
+     * crmCustomersListContacts - List Contacts
+     * 
+     * Lists Contacts
+     */
+    'get'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmCustomersListContacts.Responses.$200>
+  }
+  ['/api/crm/customers/upsert_contact']: {
+    /**
+     * crmCustomersUpsertContact - Upsert Contact
+     * 
+     * Upsert a CRM Contact
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.CrmCustomersUpsertContact.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmCustomersUpsertContact.Responses.$200>
+  }
+  ['/api/crm/customers/delete_contact']: {
+    /**
+     * crmCustomersDeleteContact - Delete Contact
+     * 
+     * Delete a CRM Contact
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.CrmCustomersDeleteContact.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmCustomersDeleteContact.Responses.$200>
+  }
+  ['/api/crm/customers/list_orgs']: {
+    /**
+     * crmCustomersListOrgs - List Organizations
+     * 
+     * Lists Organizations
+     */
+    'get'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: any,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmCustomersListOrgs.Responses.$200>
+  }
+  ['/api/crm/admin/upsert_user']: {
+    /**
+     * crmAdminUpsertUser - Upsert User
+     * 
+     * Creates a CRM user
+     */
+    'post'(
+      parameters?: Parameters<UnknownParamsObject> | null,
+      data?: Paths.CrmAdminUpsertUser.RequestBody,
+      config?: AxiosRequestConfig  
+    ): OperationResponse<Paths.CrmAdminUpsertUser.Responses.$200>
+  }
   ['/api/crm/admin/upsert_role']: {
     /**
      * crmAdminUpsertRole - Upsert Role
@@ -3655,17 +3876,17 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAdminUpsertRole.Responses.$200>
   }
-  ['/api/crm/admin/list_scopes']: {
+  ['/api/crm/admin/list_roles']: {
     /**
-     * crmAdminListScopes - List Scopes
+     * crmAdminListRoles - List Roles
      * 
-     * Lists Scopes.
+     * Lists Roles.
      */
     'get'(
       parameters?: Parameters<UnknownParamsObject> | null,
       data?: any,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAdminListScopes.Responses.$200>
+    ): OperationResponse<Paths.CrmAdminListRoles.Responses.$200>
   }
   ['/api/crm/admin/delete_role']: {
     /**
@@ -3703,17 +3924,17 @@ export interface PathsDictionary {
       config?: AxiosRequestConfig  
     ): OperationResponse<Paths.CrmAdminDeleteScope.Responses.$200>
   }
-  ['/api/crm/admin/upsert_user']: {
+  ['/api/crm/admin/list_scopes']: {
     /**
-     * crmAdminUpsertUser - Upsert User
+     * crmAdminListScopes - List Scopes
      * 
-     * Creates a CRM user
+     * Lists Scopes.
      */
-    'post'(
+    'get'(
       parameters?: Parameters<UnknownParamsObject> | null,
-      data?: Paths.CrmAdminUpsertUser.RequestBody,
+      data?: any,
       config?: AxiosRequestConfig  
-    ): OperationResponse<Paths.CrmAdminUpsertUser.Responses.$200>
+    ): OperationResponse<Paths.CrmAdminListScopes.Responses.$200>
   }
   ['/api/crm/admin/list_users']: {
     /**
@@ -4218,6 +4439,7 @@ export type AvailabilityFilters = Components.Schemas.AvailabilityFilters;
 export type AvailabilityRecord = Components.Schemas.AvailabilityRecord;
 export type AvailabilityReport = Components.Schemas.AvailabilityReport;
 export type AvailabilityRequest = Components.Schemas.AvailabilityRequest;
+export type Billing = Components.Schemas.Billing;
 export type Button = Components.Schemas.Button;
 export type Chat = Components.Schemas.Chat;
 export type ChatDurationReport = Components.Schemas.ChatDurationReport;
@@ -4226,6 +4448,7 @@ export type ChatsSatisfactionReport = Components.Schemas.ChatsSatisfactionReport
 export type Child = Components.Schemas.Child;
 export type CodeGrantResponse = Components.Schemas.CodeGrantResponse;
 export type Contact = Components.Schemas.Contact;
+export type ContactNotes = Components.Schemas.ContactNotes;
 export type CronJob = Components.Schemas.CronJob;
 export type CustomVariable = Components.Schemas.CustomVariable;
 export type Customer = Components.Schemas.Customer;
@@ -4268,6 +4491,7 @@ export type MissedChatsFilters = Components.Schemas.MissedChatsFilters;
 export type MissedChatsRecord = Components.Schemas.MissedChatsRecord;
 export type MissedChatsReport = Components.Schemas.MissedChatsReport;
 export type Organization = Components.Schemas.Organization;
+export type Payment = Components.Schemas.Payment;
 export type PerformanceAgentRecord = Components.Schemas.PerformanceAgentRecord;
 export type PerformanceFilters = Components.Schemas.PerformanceFilters;
 export type PerformanceRequest = Components.Schemas.PerformanceRequest;
@@ -4292,6 +4516,7 @@ export type Supervising = Components.Schemas.Supervising;
 export type TagPayload = Components.Schemas.TagPayload;
 export type TagsUsageReport = Components.Schemas.TagsUsageReport;
 export type TestInterface = Components.Schemas.TestInterface;
+export type TextTeamMember = Components.Schemas.TextTeamMember;
 export type TextVars = Components.Schemas.TextVars;
 export type Thread = Components.Schemas.Thread;
 export type ThreadProperties = Components.Schemas.ThreadProperties;

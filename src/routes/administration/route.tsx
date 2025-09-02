@@ -75,10 +75,37 @@ function RouteComponent() {
     password?: string;
     groups: number[];
     id?: string;
-  }>({ groups: [] });
+    reportsAccess: string[];
+  }>({ groups: [], reportsAccess: [] });
   const [copied, setCopied] = useState(false);
 
   const [users, setUsers] = useState<Paths.DashboardListUsers.Responses.$200>();
+
+  //   enum DasboardReportsAccess {
+  //     TOTAL_CHATS
+  //     CHAT_ARCHIVES
+  //     CHAT_ENGAGEMENT
+  //     MISSED_CHATS
+  //     TAGS_USAGE
+  //     CHAT_SATISFACTION
+  //     CHAT_AVAILABILITY
+  //     CHAT_DURATION
+  //     AGENT_PERFORMANCE
+  //     CHAT_RESPONSES_TIME
+  // }
+
+  const reportsOptions = [
+    { value: "TOTAL_CHATS", label: "Total Chats" },
+    { value: "CHAT_ARCHIVES", label: "Chat Archives" },
+    { value: "CHAT_ENGAGEMENT", label: "Chat Engagement" },
+    { value: "MISSED_CHATS", label: "Missed Chats" },
+    { value: "TAGS_USAGE", label: "Tags Usage" },
+    { value: "CHAT_SATISFACTION", label: "Chat Satisfaction" },
+    { value: "CHAT_AVAILABILITY", label: "Chat Availability" },
+    { value: "CHAT_DURATION", label: "Chat Duration" },
+    { value: "AGENT_PERFORMANCE", label: "Agent Performance" },
+    { value: "CHAT_RESPONSES_TIME", label: "Chat Responses Time" },
+  ];
 
   const [modalOpen, setModalOpen] = useState(false);
   const getGroups = async () => {
@@ -188,6 +215,7 @@ function RouteComponent() {
                   password: newUser.password,
                   groups: newUser.groups,
                   id: newUser.id,
+                  reportsAccess: newUser.reportsAccess,
                 }
               );
               setModalOpen(false);
@@ -214,12 +242,20 @@ function RouteComponent() {
             <Form.Item name={"password"} label="Password">
               <Input.Password placeholder="Password" />
             </Form.Item>
-            <Form.Item name={"groups"}>
+            <Form.Item name={"groups"} label="Groups">
               <Select
                 showSearch
                 mode="multiple"
                 placeholder="Select Groups"
                 options={groups?.map((g) => ({ label: g.name, value: g.id }))}
+              />
+            </Form.Item>
+            <Form.Item name={"reportsAccess"} label="Reports Access">
+              <Select
+                showSearch
+                mode="multiple"
+                placeholder="Select Reports"
+                options={reportsOptions}
               />
             </Form.Item>
           </Form>
@@ -288,7 +324,31 @@ function RouteComponent() {
                       name: "",
                       email: "",
                       groups: [],
+                      reportsAccess: [
+                        "TOTAL_CHATS",
+                        "CHAT_ARCHIVES",
+                        "CHAT_ENGAGEMENT",
+                        "MISSED_CHATS",
+                        "TAGS_USAGE",
+                        "CHATS_SATISFACTION",
+                        "CHAT_AVAILABILITY",
+                        "CHAT_DURATION",
+                        "AGENT_PERFORMANCE",
+                        "CHAT_RESPONSES_TIME",
+                      ],
                     });
+                    form.setFieldValue("reportsAccess", [
+                      "TOTAL_CHATS",
+                      "CHAT_ARCHIVES",
+                      "CHAT_ENGAGEMENT",
+                      "MISSED_CHATS",
+                      "TAGS_USAGE",
+                      "CHATS_SATISFACTION",
+                      "CHAT_AVAILABILITY",
+                      "CHAT_DURATION",
+                      "AGENT_PERFORMANCE",
+                      "CHAT_RESPONSES_TIME",
+                    ]);
                     setModalOpen(true);
                   }}
                   icon={<PlusOutlined />}
@@ -318,12 +378,18 @@ function RouteComponent() {
                                 name: user.name ?? "",
                                 email: user.email ?? "",
                                 groups: user.groups ?? [],
+                                reportsAccess: Array.isArray(user.reportsAccess)
+                                  ? user.reportsAccess
+                                  : [user.reportsAccess ?? ""],
                               });
                               form.setFieldsValue({
                                 id: user.id ?? "",
                                 name: user.name ?? "",
                                 email: user.email ?? "",
                                 groups: user.groups ?? [],
+                                reportsAccess: Array.isArray(user.reportsAccess)
+                                  ? user.reportsAccess
+                                  : [user.reportsAccess ?? ""],
                               });
                             }}
                           />

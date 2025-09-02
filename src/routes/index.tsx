@@ -8,16 +8,69 @@ export const Route = createFileRoute("/" as never)({
   component: RouteComponent,
 });
 
-const validateSession = async () => {
+const menuItems = [
+  {
+    key: "CHAT_ARCHIVES",
+    name: "Chat Archives",
+    path: "/explorer/archives",
+  },
+  {
+    key: "TOTAL_CHATS",
+    name: "Total Chats",
+    path: "/explorer/total_chats_report",
+  },
+  {
+    key: "CHAT_ENGAGEMENT",
+    name: "Chat Engagement",
+    path: "/explorer/engagement",
+  },
+  {
+    key: "MISSED_CHATS",
+    name: "Missed Chats",
+    path: "/explorer/missed_chats",
+  },
+  {
+    key: "TAGS_USAGE",
+    name: "Tags Usage",
+    path: "/explorer/tags_usage",
+  },
+  {
+    key: "CHAT_SATISFACTION",
+    name: "Chat Satisfaction",
+    path: "/explorer/satisfaction",
+  },
+  {
+    key: "CHAT_AVAILABILITY",
+    name: "Chat Availability",
+    path: "/explorer/availability",
+  },
+  {
+    key: "CHAT_DURATION",
+    name: "Chat Duration",
+    path: "/explorer/duration",
+  },
+  {
+    key: "AGENT_PERFORMANCE",
+    name: "Agent Performance",
+    path: "/explorer/agent_performance",
+  },
+  {
+    key: "RESPONSES_TIME",
+    name: "Chat Responses Time",
+    path: "/explorer/responses_time",
+  },
+];
+
+const validateSession = async (): Promise<Paths.VerifyDashboardToken.Responses.$200 | null> => {
   try {
     const client = await API();
-    await client.verifyDashboardToken({
+    const { data } = await client.verifyDashboardToken({
       app_slug: import.meta.env.VITE_APP_SLUG,
     });
-    return true;
+    return data;
   } catch (e) {
     // window.location.href = `/`
-    return false;
+    return null;
   }
 };
 
@@ -59,7 +112,7 @@ function RouteComponent() {
     setLoginLoading(true);
     try {
       const client = await API();
-      await client.DashboardAppLogin(
+      const user = await client.DashboardAppLogin(
         {
           app_slug: import.meta.env.VITE_APP_SLUG,
         },
@@ -68,9 +121,13 @@ function RouteComponent() {
           password: userData.password,
         }
       );
+      const accessibleMenuItems = menuItems.filter((item) =>
+        user.data?.reportsAccess?.includes(item.key)
+      );
+      const path = accessibleMenuItems[0]?.path ?? "/explorer/archives";
       nav({
-        to: "/explorer/archives",
-      });
+        to: path,
+      } as never);
     } catch (error) {
       const e =
         (error as AxiosError<Paths.DashboardAppLogin.Responses.$500>).response
@@ -81,23 +138,32 @@ function RouteComponent() {
     setLoginLoading(false);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const logo = await fetchLogoURL();
-      setLogoURL(logo ?? "");
-      validateSession()
-        .then((r) => {
-          if (r) {
-            nav({
-              to: "/explorer/archives",
-            });
-          }
-        })
-        .finally(() => setLoading(false));
-    };
-    fetchData();
-  }, []);
+useEffect(() => {
+  const fetchData = async () => {
+    setLoading(true);
+    const logo = await fetchLogoURL();
+    setLogoURL(logo ?? "");
+
+    try {
+      const session = await validateSession();
+      if (session) {
+        const accessibleMenuItems = menuItems.filter((item) =>
+          session.reportsAccess?.includes(item.key)
+        );
+        const path = accessibleMenuItems[0]?.path ?? "/explorer/archives";
+
+        nav({
+          to: path,
+        } as never);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, [nav]);
+
 
   if (loading)
     return (

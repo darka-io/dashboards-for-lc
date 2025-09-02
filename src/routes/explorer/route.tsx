@@ -84,44 +84,52 @@ export const Route = createFileRoute("/explorer")({
 
 const menuItems = [
   {
+    key: "CHAT_ARCHIVES",
     name: "Chat Archives",
     path: "/explorer/archives",
-    // icon: <MessageOutlined />
   },
   {
+    key: "TOTAL_CHATS",
     name: "Total Chats",
     path: "/explorer/total_chats_report",
-    // icon: <MessageOutlined />
   },
   {
+    key: "CHAT_ENGAGEMENT",
     name: "Chat Engagement",
     path: "/explorer/engagement",
   },
   {
+    key: "MISSED_CHATS",
     name: "Missed Chats",
     path: "/explorer/missed_chats",
   },
   {
+    key: "TAGS_USAGE",
     name: "Tags Usage",
     path: "/explorer/tags_usage",
   },
   {
+    key: "CHAT_SATISFACTION",
     name: "Chat Satisfaction",
     path: "/explorer/satisfaction",
   },
   {
+    key: "CHAT_AVAILABILITY",
     name: "Chat Availability",
     path: "/explorer/availability",
   },
   {
+    key: "CHAT_DURATION",
     name: "Chat Duration",
     path: "/explorer/duration",
   },
   {
+    key: "AGENT_PERFORMANCE",
     name: "Agent Performance",
     path: "/explorer/agent_performance",
   },
   {
+    key: "RESPONSES_TIME",
     name: "Chat Responses Time",
     path: "/explorer/responses_time",
   },
@@ -158,6 +166,10 @@ function RouteComponent() {
   const [selectorFilter, setSelectorFilter] = useState("");
   const { pathname: path } = useLocation();
   const [messageApi, messageContext] = message.useMessage();
+
+  const accessibleMenuItems = menuItems.filter(item =>
+  sessionData?.reportsAccess.includes(item.key)
+);
 
   const navigate = useNavigate();
   useEffect(() => {
@@ -285,7 +297,7 @@ useEffect(() => {
             {/* LOGO */}
             <div>
               <img
-                src={sessionData?.whiteLabelImage || "/logo.png"}
+                src={sessionData?.dashboardDetails.whiteLabelImage || "/logo.png"}
                 className="w-[200px] mx-auto py-4 max-h-[80px]"
               />
             </div>
@@ -306,7 +318,7 @@ useEffect(() => {
             </div>
           </Spin> */}
             <div className="flex flex-col flex-1  mt-4 mx-2">
-              {menuItems.map((item, i) => {
+              {accessibleMenuItems.map((item, i) => {
                 return (
                   <div
                     key={i}
